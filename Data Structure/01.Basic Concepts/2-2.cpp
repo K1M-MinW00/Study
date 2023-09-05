@@ -1,5 +1,7 @@
 // Q. data2.txt 와 data3.txt 는 각각 오름차순으로 정렬된 n1개의 정수와 n2개의 정수를 포함한다.
 // data2.txt 와 data3.txt 에 포함된 정수들의 교집합을 오름차순으로 화면에 출력하라.
+// 각각 입력 파일은 오름차순으로 정렬된, 중복되지 않는 정수들이 space 로 구분되어 저장되어 있다.
+// 파일의 정수 데이터는 동적 배열에 저장한다. (malloc 함수 사용)
 
 #include <iostream>
 #include <cstdio>
