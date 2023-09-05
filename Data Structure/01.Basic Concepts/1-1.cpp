@@ -21,3 +21,5 @@ int main()
     cout << min ;
     return 0;
 }
+
+// Ex) Input : 5 1 -1 0 3 100 , Output : -1
