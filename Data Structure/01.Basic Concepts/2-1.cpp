@@ -90,7 +90,7 @@ int main()
         n++;
         fscanf(fp,"%s",arr[n++]);    
     }
-
+    fclose(fp);
     char find[4];
     scanf("%s",find);
 
