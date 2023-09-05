@@ -35,4 +35,4 @@ int main()
     return 0;
 }
 
-// Ex) Input : (File name), File Data : 5 -1 0 3 100 , Output : -1
+// Ex) Input : (File name), File Data : 5 1 -1 0 3 100 , Output : -1
