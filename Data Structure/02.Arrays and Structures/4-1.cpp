@@ -53,6 +53,16 @@ void add(int** arr1,int** arr2,int** arr3,int rows,int cols)
         }
     }
 }
+
+void free2dArray(int** arr,int cols)
+{
+    for(int i=0;i<cols;i++)
+    {
+        free(arr[i]);
+    }
+
+    free(arr);
+}
 int main()
 {
     int rows,cols;
@@ -74,17 +84,9 @@ int main()
     add(arr1,arr2,arr3,rows,cols);
     print2dArray(arr3,rows,cols);
 
-
-    for(int i=0;i<cols;i++)
-    {
-        free(arr1[i]);
-        free(arr2[i]);
-        free(arr3[i]);
-    }
-
-    free(arr1);
-    free(arr2);
-    free(arr3);
+    free2dArray(arr1,cols);
+    free2dArray(arr2,cols);
+    free2dArray(arr3,cols);
 
     return 0;
 }
