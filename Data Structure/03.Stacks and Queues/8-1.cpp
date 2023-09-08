@@ -7,29 +7,50 @@ using namespace std;
 #define MAX_STACK_SIZE 100
 #define MAX_EXPR_SIZE 100
 
-typedef enum{ lparen, rparen,PLUS,MINUS,times,divide,mod,eos,operand} precedence;
+typedef enum
+{
+    lparen,
+    rparen,
+    PLUS,
+    MINUS,
+    times,
+    divide,
+    mod,
+    eos,
+    operand
+} precedence;
+
 precedence stack[MAX_STACK_SIZE];
 char expr[MAX_EXPR_SIZE];
-int top=0;
-int isp[] = {0, 19, 12, 12, 13, 13, 13, 0}; // incoming precedence
+int top = 0;
+int isp[] = {0, 19, 12, 12, 13, 13, 13, 0};  // incoming precedence
 int icp[] = {20, 19, 12, 12, 13, 13, 13, 0}; // in-stack precedence
 // lparen, rparen, plus, minus, times, divide, mod, eos
 
-precedence getToken(char *symbol,int *n)
+precedence getToken(char *symbol, int *n)
 {
     *symbol = expr[(*n)++];
 
-    switch(*symbol)
+    switch (*symbol)
     {
-        case '(' : return lparen;
-        case ')' : return rparen;
-        case '+' : return PLUS;
-        case '-' : return MINUS;
-        case '/' : return divide;
-        case '*' : return times;
-        case '%' : return mod;
-        case '0' : return eos;
-        default : return operand;
+    case '(':
+        return lparen;
+    case ')':
+        return rparen;
+    case '+':
+        return PLUS;
+    case '-':
+        return MINUS;
+    case '/':
+        return divide;
+    case '*':
+        return times;
+    case '%':
+        return mod;
+    case '\0':
+        return eos;
+    default:
+        return operand;
     }
 }
 
@@ -45,53 +66,69 @@ precedence pop()
 
 void printToken(precedence token)
 {
-    switch(token)
+    switch (token)
     {
-        case lparen : printf("( "); break;
-        case rparen : printf(") "); break;
-        case PLUS : printf("+ ");break;
-        case MINUS : printf("- "); break;
-        case divide : printf("/ ");break;
-        case times : printf("* "); break;
-        case mod : printf("% ");break;
-        case eos : printf("\0");break;
+    case lparen:
+        printf("( ");
+        break;
+    case rparen:
+        printf(") ");
+        break;
+    case PLUS:
+        printf("+ ");
+        break;
+    case MINUS:
+        printf("- ");
+        break;
+    case divide:
+        printf("/ ");
+        break;
+    case times:
+        printf("* ");
+        break;
+    case mod:
+        printf("% ");
+        break;
+    case eos:
+        printf("\0");
+        break;
     }
 }
 void postfix()
 {
-    char symbol; precedence token;
-    int n=0;
-    stack[0]=eos;
+    char symbol;
+    precedence token;
+    int n = 0;
+    stack[0] = eos;
 
-    for(token = getToken(&symbol,&n); token!=eos;token = getToken(&symbol,&n))
+    for (token = getToken(&symbol, &n); token != eos; token = getToken(&symbol, &n))
     {
-        if(token == operand)
-            printf("%c ",symbol);
-        else if(token == rparen)
+        if (token == operand)
+            printf("%c ", symbol);
+        else if (token == rparen)
         {
-            while(stack[top]!=lparen)
+            while (stack[top] != lparen)
                 printToken(pop());
             pop(); // lparen 을 pop
         }
         else
         {
             // isp 가 현재 토큰의 icp 보다 크거나 같은 기호를 제거하고 출력
-            while(isp[stack[top]]>=icp[token])
+            while (isp[stack[top]] >= icp[token])
                 printToken(pop());
             push(token);
         }
     }
-    while((token=pop())!=eos)
+    while ((token = pop()) != eos)
         printToken(token);
-    printf("\n");
 }
 
 int main()
 {
-    scanf("%s",&expr);
+    scanf("%s", &expr);
     postfix();
 
     return 0;
 }
 
-// EX) Input: e/(f+a*d)+c , Output : e f a d * + / c
+// EX) Input: e/(f+a*d)+c , Output : e f a d * + / c + 
