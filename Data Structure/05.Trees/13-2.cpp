@@ -48,7 +48,7 @@ treePointer deleteq()
 
 void leverOrder(treePointer ptr)
 {
-    int front = rear = 0;
+    int front = 0, rear = 0;
     treePointer queue[MAX_QUEUE_SIZE];
     if (!ptr)
         return;
@@ -89,4 +89,4 @@ int main()
     leverOrder(r1);
     return 0;
 }
-// Output : 4 3 2 5 6 8
+// Output : 4 3 6 2 5 8
