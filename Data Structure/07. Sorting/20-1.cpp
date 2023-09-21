@@ -16,7 +16,7 @@ int digit(char t[], int index)
         return t[index] - 97;
 }
 
-int radixSort(char a[][6], int link[], int d, int r, int n)
+int radixSort(char a[][4], int link[], int d, int r, int n)
 {
     int front[26], rear[26];
     int i, bin, cur, first, last;
@@ -66,7 +66,7 @@ int main()
         exit(1);
     }
 
-    char a[100][6];
+    char a[100][4];
 
     int i = 1;
 
@@ -78,7 +78,7 @@ int main()
     int *link = new int;
     fclose(f);
 
-    int k = radixSort(a, link, 5, 26, i);
+    int k = radixSort(a, link, 3, 26, i);
 
     for (int j = k; j; j = link[j])
         printf("%s ", a[j]);
