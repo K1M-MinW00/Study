@@ -5,7 +5,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
-
+#include <cmath>
 using namespace std;
 #define SWAP(x, y, z) ((z) = (x), (x) = (y), (y) = (z))
 
@@ -116,73 +116,163 @@ void minmult(int n, vector<int> &d, matrix_t &M, matrix_t &P)
         }
 }
 
-//3.4-1 이분검색트리의 검색 (이분검색트리에서 검색키와 같은 원소가 있는 마디를 찾으시오, 찾는 원소는 나무에 있다고 가정한다.)
+// 3.4-1 이분검색트리의 검색 (이분검색트리에서 검색키와 같은 원소가 있는 마디를 찾으시오, 찾는 원소는 나무에 있다고 가정한다.)
 typedef struct node *node_ptr;
 typedef struct node
 {
     int key;
-    node_ptr left,right;
-}node_t;
+    node_ptr left, right;
+} node_t;
 
 void search(node_ptr tree, int keyin, node_ptr &p)
 {
     bool found;
 
-    p=tree;
+    p = tree;
     found = false;
-    while(!found)
+    while (!found)
     {
-        if(p->key== keyin)
+        if (p->key == keyin)
             found = tree;
-        else if(keyin < p->key)
+        else if (keyin < p->key)
             p = p->left;
         else // keyin > p->key
             p = p->right;
     }
 }
 
-//3.4-2 최적 이분검색트리 (주어진 원소의 집합을 가지고 최적 이분검색트리를 구축한다. 여기서 각 원소에 대해 검색키가 될 확률이 주어진다.)
-// n : 원소의 개수 , p : index 범위가 1~n 까지인 실수 배열 , p[i] : i 째 원소를 찾을 확률
+// 3.4-2 최적 이분검색트리 (주어진 원소의 집합을 가지고 최적 이분검색트리를 구축한다. 여기서 각 원소에 대해 검색키가 될 확률이 주어진다.)
+//  n : 원소의 개수 , p : index 범위가 1~n 까지인 실수 배열 , p[i] : i 째 원소를 찾을 확률
 
-void optsearchtree(int n,vector<int>& p,matrix_t& A, matrix_t& R)
+void optsearchtree(int n, vector<int> &p, matrix_t &A, matrix_t &R)
 {
-    for(int i=1;i<=n;i++)
+    for (int i = 1; i <= n; i++)
     {
-        A[i][i-1] = 0;
+        A[i][i - 1] = 0;
         A[i][i] = p[i];
-        R[i][i-1] = 0;
-        R[i][i]= i;
+        R[i][i - 1] = 0;
+        R[i][i] = i;
     }
-    A[n+1][n]= R[n+1][n]=0;
+    A[n + 1][n] = R[n + 1][n] = 0;
 
-    for(int diagonal = 1; diagonal <= n-1; diagonal++)
-        for(int i=1;i<=n-diagonal;i++)
+    for (int diagonal = 1; diagonal <= n - 1; diagonal++)
+        for (int i = 1; i <= n - diagonal; i++)
         {
-            int j=i+diagonal, k;
-            A[i][j] = minimum(i,j,k,p,A);
+            int j = i + diagonal, k;
+            A[i][j] = minimum(i, j, k, p, A);
             R[i][j] = k;
         }
 }
 
-node_ptr tree(int i,int j,vector<int>& keys, matrix_t &R)
+node_ptr tree(int i, int j, vector<int> &keys, matrix_t &R)
 {
     int k = R[i][j];
-    if(k==0)
+    if (k == 0)
         return NULL;
     else
     {
         node_ptr node;
         node->key = keys[k];
-        node->left= tree(i,k-1,keys,R);
-        node->right = tree(k+1,j,keys,R);
+        node->left = tree(i, k - 1, keys, R);
+        node->right = tree(k + 1, j, keys, R);
         return node;
-    }    
+    }
 }
+
+// 3.5 외판원 문제를 푸는 동적계획 알고리즘 (가중치포함 방향그래프에서 최적일주여행길을 결정하시오. 가중치는 음이 아닌 정수이다. )
+// 방향 그래프에서 한 vertex 에서 각각의 다른 vertices 들을 정확히 한 번 씩 통과하는 path 가 있다면 Hamiltonian Graph 라고 부른다.
+// weighted directed graph 에서 optimal tour 는 minimum length 를 가짐.
+// W 는 G = (V,E) 의 정보를 adjacency matrix로 표현 , A 는 V 의 부분집합 , D[v_i][A] 는 v_i 에서 v_1 로 가는 가장 짧은 길이의 경로
+
+// optimal length 의 길이는 minimum( W[1][j] + D[v_j][V-{v_1,V_j}]) for 2<= j <= n 이다.
+#define MAX 10
+#define MAX_POW 10
+
+// A의 원소의 개수 = 1 의 개수 이므로, Bitwise 연산을 통해 v_i 가 포함되어 있으면 1로, 포함되어 있지 않으면 0으로 생각
+int count(int A)
+{
+    int cnt = 0;
+    for (; A != 0; A >>= 1)
+        if (A & 1)
+            cnt++;
+
+    return cnt;
+} // Ex) S = {v_2, v_3, v_4} , A = {v_2, v_4} : 101 = 5 , count(A) = 2
+
+// 1 이 아닌 i 에 대해 A 안에 v_i 가 존재 하는지 확인
+bool isIn(int i, int A)
+{
+    return (A & (1 << (i - 2))) != 0;
+} // Ex) A = {v_2, v_3, v_4} , i = 4 => True
+
+// A 와 2^(j-2) 의 차이
+int diff(int A, int j)
+{
+    return (A & ~(1 << (j - 2)));
+} // Ex) A={v_2,v_4} : 101 = 5 , j = 4 => diff(A,4) = 1 : {v_2}
+
+int minimum(int n, int i, int &minJ, int A, matrix_t &W, matrix_t &D)
+{
+    int minV = 999, value;
+    for (int j = 2; j <= n; j++)
+    {
+        if (!isIn(j, A))
+            continue;
+        int value = W[i][j] + D[j][diff(A, j)];
+        if (minV > value)
+        {
+            minV = value;
+            minJ = j;
+        }
+    }
+    return minV;
+}
+
+void travel(int n, matrix_t &W, matrix_t &D, matrix_t &P, int &minlength)
+{
+    int i, j, k, A;
+
+    int subset_size = pow(2, n - 1);
+    for (i = 2; i <= n; i++)
+        D[i][0] = W[i][1];
+
+    for (k = 1; k <= n - 2; k++)
+        for (A = 0; A < subset_size; A++)
+        {
+            if (count(A) != k)
+                continue;
+            for (i = 2; i <= n; i++)
+            {
+                if (isIn(i, A))
+                    continue;
+                D[i][A] = minimum(n, i, j, A, W, D);
+                P[i][A] = j;
+            }
+        }
+    A = subset_size - 1; // A = V - {v1}
+    D[1][A] = minimum(n, 1, j, A, W, D);
+    P[1][A] = j;
+    minlength = D[1][A];
+}
+
+void tour(int v, int A, matrix_t &P)
+{
+    int k = P[v][A];
+    if (A == 0)
+        cout << "1";
+    else
+    {
+        cout << k << " -> ";
+        tour(k, diff(A, k), P);
+    }
+}
+
+// optimal tour : 1 -> tour(1, pow(2,n - 1), P);
+// DP 를 통해 푼 외판원 문제의 시간복잡도는 (n^2) * (2^n) 으로 exponential 하다.
 
 /*
 최적의 원칙(principle of optimality)
 - 어떤 문제의 입력사례의 최적해가 그 입력사례를 분할한 부분사례에 대한 최적해를 항상 포함하고 있으면, 그 문제는 최적의 원칙이 성립한다고 한다.
 ex) k 를 i 에서 j 로 가는 최적경로 상의 마디라고 하면, i 에서 k 로 가는 부분경로와 k 에서 j 로 가는 부분경로도 반드시 최적이어야 한다.
-
 
 */
