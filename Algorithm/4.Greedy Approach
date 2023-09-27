@@ -1,0 +1,169 @@
+// 4. Greedy Approach : 순서대로 답을 하나씩 모아서 최종 답을 구축하는데, 가장 좋아 보이는 답을 선택하여 모음.
+// 선택할 당시(locally) 는 최적이지만, 전체적으로(globally) 최적인 해를 구하고 싶음.
+// 최적의 해를 구하고 싶지만, 항상 최적인 해를 얻는다는 보장이 없으므로, 최적인 해답을 얻는지 확인하는 절차가 필요
+// 1) 선택 과정(selection procedure) : 집합에 추가할 다음 원소를 고른다. 그 당시 최적을 선택하는 탐욕 기준에 따라 선택
+// 2) 적절성 검사(feasibility check) : 새로운 집합이 해답이 되기 적절한지 검사
+// 3) 해답 점검(solution check) : 새로운 집합이 문제의 해답인지 결정
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+using namespace std;
+#define SWAP(x, y, z) ((z) = (x), (x) = (y), (y) = (z))
+
+// 4.1-1 Prim's Algorithm : 가장 가까운 마디 중 최소 가중치를 가진 이음선으로 연결
+// 1 부터 n 까지의 2차원 배열 W 로 가중치포함 비방향 그래프를 표현
+// W[i][j] : i번째 마디와 j번째 마디를 연결하는 이음선의 가중치
+
+typedef vector<vector<int>> matrix_t;
+typedef vector<pair<int, int>> set_of_edges;
+typedef pair<int, int> edge_t;
+
+#define INF 9999
+void prim(int n, matrix_t &W, set_of_edges &F)
+{
+    int vnear, min;
+    vector<int> nearest(n + 1), distance(n + 1);
+
+    F.clear(); // F = { }
+
+    for (int i = 2; i <= n; i++)
+    {
+        nearest[i] = 1; //  v_1 부터 시작
+        distance[i] = W[1][i];
+    }
+
+    for (int k = 1; k < n; k++)
+    {
+        min = INF;
+        for (int i = 2; i <= n; i++)
+            if (0 <= distance[i] && distance[i] < min)
+            {
+                min = distance[i];
+                vnear = i;
+            }
+
+        F.push_back(make_pair(vnear, nearest[vnear]));
+        distance[vnear] = -1; // Y 집합에 추가한다는 의미
+
+        for (int i = 2; i <= n; i++) // Y 에 속하지 않은 각 마디에 대하여 Y로부터의 거리를 갱신
+        {
+            if (distance[i] > W[i][vnear])
+            {
+                distance[i] = W[i][vnear];
+                nearest[i] = vnear;
+            }
+        }
+    }
+} // 시간 복잡도 : Theta(n^2) , n : 정점의 개수
+
+// 4.1-2 Kruskal's Algorithm : 각 마디마다 자신만 포함하는 V의 서로소 부분집합들을 만들고 시작하여, 가중치가 작은 것부터 차례로 이음선 검사
+// 정점 u 와 v 를 잇는 이음선의 가중치 w 로 edge 표현
+typedef struct edge
+{
+    int u, v, w;
+} edge_t2;
+
+struct edge_compare
+{
+    bool operator()(edge_t2 e1, edge_t2 e2)
+    {
+        if (e1.w > e2.w)
+            return true;
+        else
+            return false;
+    }
+};
+
+typedef vector<edge_t2> set_of_edges2;
+typedef priority_queue<edge_t2, vector<edge_t2>, edge_compare> PriorityQueue;
+vector<int> dset;
+
+void dset_init(int n)
+{
+    dset.resize(n + 1);
+    for (int i = 1; i <= n; i++)
+        dset[i] = 1;
+}
+
+int dset_find(int i)
+{
+    while (dset[i] != i)
+        i = dset[i];
+    return i;
+}
+
+void dset_merge(int p, int q)
+{
+    dset[p] = q;
+}
+
+void kruskal(int n, int m, set_of_edges2 &E, set_of_edges2 &F)
+{
+    int p, q;
+    edge_t2 e;
+    PriorityQueue PQ;
+
+    for (edge_t2 e : E) // E 에 속한 m 개의 이음선을 오름차순으로 정렬
+        PQ.push(e);
+
+    F.clear();
+    dset_init(n);
+
+    while (F.size() < n - 1) // F 에 n-1 개의 이음선이 있을 때 while 루프 탈출
+    {
+        e = PQ.top(); // 아직 고려하지 않은 이음선 중 가중치가 최소인 이음선
+        PQ.pop();
+        p = dset_find(e.u);
+        q = dset_find(e.v);
+        if (p != q)
+        {
+            dset_merge(p, q);
+            F.push_back(e); // e 를 F 에 추가
+        }
+    }
+} //  시간복잡도 : Theta(n^2 * log n) , Theta(m * log m) , m : 간선의 개수, n : 정점의 개수
+
+// 4.2 Dijkstra's Algorithm for Single-Source Shortest Paths : 하나의 특정 마디에서 다른 모든 마디로 가는 최단경로 구하기
+// W : 마디가 n 개 있는 연결된 가중치포함 방향그래프 , W[i][j] : i번째 마디와 j번째 마디를 잇는 이음선 상의 가중치
+
+void dijkstra(int n, matrix_t &W, set_of_edges &F)
+{
+    int vnear, min;
+    vector<int> touch(n + 1), length(n + 1);
+
+    F.clear();
+
+    for (int i = 2; i <= n; i++)
+    {
+        touch[i] = 1;        // v_1 에서 출발하는 현재 최단경로의 마지막 마디를 v_1 으로 초기화
+        length[i] = W[1][i]; // 그 경로의 길이는 v_1 에서의 이음선 상의 가중치로 초기화
+    }
+
+    for (int k = 2; k <= n; k++)
+    {
+        min = INF;
+        for (int i = 2; i <= n; i++) // 최단경로를 가지는지 각 마디를 점검
+            if (0 <= length[i] && length[i] < min)
+            {
+                min = length[i];
+                vnear = i;
+            }
+        F.push_back(make_pair(touch[vnear], vnear)); // touch[vnear] 가 인덱스인 마디에서 vnear 가 인덱스인 마디로 가는 이음선을 F 에 추가
+
+        for (int i = 2; i <= n; i++)
+            if (length[i] > length[vnear] + W[vnear][i])
+            {
+                length[i] = length[vnear] + W[vnear][i]; // Y에 속하지 않는 각 마디에 대해서, 최단경로를 바꿈
+                touch[i] = vnear;                        // vnear 가 인덱스인 마디를 Y 에 추가
+            }
+        length[vnear] = -1;
+    }
+}
+
+/*
+ Prim 알고리즘 : Theta(n^2) , Kruskal 알고리즘 : Theta(n^2 * log n) , Theta(m * log m) , Dijkstra 알고리즘 : Theta(n^2)
+ - Sparse Graph 의 경우 , Kruskal 알고리즘은 Theta(n * log n)으로 Prim 알고리즘보다 빠름
+ - Dense Grpah 의 경우, Kruskal 알고리즘은 Theta(n^2 * log n)Prim 알고리즘보다 느림
+*/
