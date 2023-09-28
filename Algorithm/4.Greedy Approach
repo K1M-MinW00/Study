@@ -9,8 +9,9 @@
 #include <algorithm>
 #include <vector>
 #include <queue>
+#include <map>
+
 using namespace std;
-#define SWAP(x, y, z) ((z) = (x), (x) = (y), (y) = (z))
 
 // 4.1-1 Prim's Algorithm : 가장 가까운 마디 중 최소 가중치를 가진 이음선으로 연결
 // 1 부터 n 까지의 2차원 배열 W 로 가중치포함 비방향 그래프를 표현
@@ -162,8 +163,216 @@ void dijkstra(int n, matrix_t &W, set_of_edges &F)
     }
 }
 
+// 4-3 마감시간이 있는 스케줄 짜기
+// 작업의 수 : n , i번째 마감시간 : deadline[i] , 마감시간 정수배열 deadline 은 내림차순으로 정렬되어 있음
+typedef vector<int> sequence_of_integer;
+
+bool is_feasible(sequence_of_integer &K, sequence_of_integer &deadline)
+{
+    for (int i = 1; i < K.size(); i++)
+        if (i > deadline[K[i]])
+            return false;
+    return true;
+}
+
+void schedule(int n, sequence_of_integer &deadline, sequence_of_integer &J)
+{
+    sequence_of_integer K;
+    J.clear();
+    J.push_back(0);
+    J.push_back(1);
+
+    for (int i = 2; i <= n; i++)
+    {
+        K.resize(J.size());
+        copy(J.begin(), J.end(), K.begin());
+        int j = 1;
+        while (j < K.size() && deadline[K[j]] <= deadline[i])
+            j++;
+        K.insert(K.begin() + j, i);
+        if (is_feasible(K, deadline))
+        {
+            J.resize(K.size());
+            copy(K.begin(), K.end(), J.begin());
+        }
+    }
+} // 시간 복잡도 : Theta(n^2)
+
+// 4-4 허프만 코드 : 데이터 파일을 코드화 하는 효율적인 방법
+typedef struct node *node_ptr;
+typedef struct node
+{
+    char symbol;   // the value of a character
+    int frequency; // the number of times the character is in the file
+    node_ptr left, right;
+} node_t;
+
+struct compare
+{
+    bool operator()(node_ptr p, node_ptr q)
+    {
+        return p->frequency > q->frequency;
+    }
+};
+
+typedef priority_queue<node_ptr, vector<node_ptr>, compare> PriorityQueue2;
+
+node *create_node(char s, int f)
+{
+    node *nodeptr = new node;
+    nodeptr->frequency = f;
+    nodeptr->symbol = s;
+    nodeptr->left = NULL;
+    nodeptr->right = NULL;
+
+    return nodeptr;
+}
+
+void huffman(int n, PriorityQueue2 &PQ)
+{
+    for (int i = 1; i <= n - 1; i++)
+    {
+        node_ptr p = PQ.top();
+        PQ.pop();
+        node_ptr q = PQ.top();
+        PQ.pop();
+        node_ptr r = create_node('+', p->frequency + q->frequency);
+        r->left = p;
+        r->right = q;
+        PQ.push(r);
+    }
+}
+
+void make_encoder(node_ptr node, string code, map<char, string> &encoder)
+{
+    if (node->symbol != '+')
+    {
+        encoder[node->symbol] = code;
+    }
+    else
+    {
+        make_encoder(node->left, code + '0', encoder);
+        make_encoder(node->right, code + "1", encoder);
+    }
+}
+
+void decode(node_ptr root, node_ptr node, string s, int i)
+{
+    if (i <= s.length())
+    {
+        if (node->symbol != '+')
+        {
+            cout << node->symbol;
+            decode(root, root, s, i);
+        }
+        else
+        {
+            if (s[i] == '0')
+                decode(root, node->left, s, i + 1);
+            else
+                decode(root, node->right, s, i + 1);
+        }
+    }
+}
+
+void preorder(node *node)
+{
+    if (node != NULL)
+    {
+        printf("%c:%d ", node->symbol, node->frequency);
+        preorder(node->left);
+        preorder(node->right);
+    }
+}
+void inorder(node *node)
+{
+    if (node != NULL)
+    {
+        inorder(node->left);
+        printf("%c:%d ", node->symbol, node->frequency);
+        inorder(node->right);
+    }
+}
+
+// 4.5-1 Knapsack - Greedy Algorithm for Fractional Knapsack Problem (단위 무게 당 가격이 가장 비싼 것)
+typedef struct item *item_ptr;
+typedef struct item
+{
+    int id;
+    int weight;
+    int profit;
+    int profit_per_unit;
+} item_t;
+
+int n, W;
+vector<item_t> items;
+
+bool compare_item(item_t i, item_t j)
+{
+    if (i.profit_per_unit > j.profit_per_unit)
+        return true;
+    return false;
+};
+
+void knapsack1(int &maxprofit, int &totweight)
+{
+    maxprofit = totweight = 0;
+
+    for (int i = 1; i <= n; i++)
+    {
+        if (totweight + items[i].weight <= W)
+        {
+            maxprofit += items[i].profit;
+            totweight += items[i].weight;
+        }
+        else
+        {
+            maxprofit += (W - totweight) * items[i].profit_per_unit;
+            totweight += (W - totweight);
+            break; // 계속할 필요 X
+        }
+    }
+}
+
+// 4.5-2 Knapsack - Simple Dynamic programming for the 0-1 Knapsack Problem
+//  n : 물건 개수, w[] : 물건의 무게 (오름차순) , W : 배낭에 담을 수 있는 무게, P[n][W] : 남은 물건과 담을 수 있는 배낭 무게
+int knapsack2(int n, int W, int w[], int p[], vector<vector<int>> &P)
+{
+    if (n == 0 || W <= 0)
+        return 0;
+
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= W; j++)
+            P[i][j] = (w[i] > j) ? P[i - 1][j] : max(P[i - 1][j], p[i] + P[i - 1][j - w[i]]);
+
+    return P[0][W];
+}
+
+// 4.5-3 Knapsack - Enhanced Dynamic programming for the 0-1 Knapsack Problem
+//  n : 물건 개수, w[] : 물건의 무게 (오름차순) , W : 배낭에 담을 수 있는 무게, P[n][W] : 남은 물건과 담을 수 있는 배낭 무게
+int knapsack3(int n, int W, int w[], int p[], map<pair<int, int>, int> &P)
+{
+    if (n == 0 || W <= 0)
+        return 0;
+
+    int lvalue = (P.find(make_pair(n - 1, W)) != P.end()) ? P[make_pair(n - 1, W)] : knapsack3(n - 1, W, w, p, P);                      // 담지 않는 경우
+    int rvalue = (P.find(make_pair(n - 1, W - w[n])) != P.end()) ? P[make_pair(n - 1, W - w[n])] : knapsack3(n - 1, W - w[n], w, p, P); // 담는 경우
+    P[make_pair(n, W)] = (w[n] > W) ? lvalue : max(lvalue, p[n] + rvalue);
+
+    return P[make_pair(n, W)];
+}
+
 /*
  Prim 알고리즘 : Theta(n^2) , Kruskal 알고리즘 : Theta(n^2 * log n) , Theta(m * log m) , Dijkstra 알고리즘 : Theta(n^2)
  - Sparse Graph 의 경우 , Kruskal 알고리즘은 Theta(n * log n)으로 Prim 알고리즘보다 빠름
  - Dense Grpah 의 경우, Kruskal 알고리즘은 Theta(n^2 * log n)Prim 알고리즘보다 느림
+
+
+ 허프만 코드
+ - Fixed-length binary code : 각 문자를 표현하는 비트의 개수가 일정. 쓰기 쉽고 편리
+ - variable-length binary code : 각 문자마다 표현하는 비트의 개수가 다름. 데이터 압축 관점에서 훨씬 효율적
+ - prefix code : 전치코드 , 한 문자의 코드워드가 다른 문자의 코드워드의 앞부분이 될 수 없음
+
+ - 최적 이진 전치코드에 해당되는 이진트리는 Full Tree. 잎이 아닌 마디는 모두 자식 마디가 2개
+
 */
