@@ -1,0 +1,91 @@
+// 5. Backtracking : 임의의 집합에서 주어진 기준대로 원소의 순서를 선택하는 문제를 푸는데 유용
+// 트리의 변형된 깊이우선탐색(DFS) 방법
+// 되추적 : 내려 가봐야 해답이 없는 마디를 만나는 순간, 그 마디의 검색을 중단하고 그 마디의 부모마디로 돌아가서 다른 자식마디의 검색을 계속하는 과정
+// Promising : 해답이 될 가능성이 있는 마디로 검색을 계속
+// Non-Promising : 해답이 될 가능성이 없는 마디로 검색을 중단하고 부모마디로 이동
+// Pruning : 가지치기. 유망한지 아닌지를 확인하는 작업
+// 가지친 상태공간트리(Pruned State Space Tree) : 유망한 마디만으로 구성된 부분트리
+
+// 주어진 기준을 잘 활용하여 promising function 을 잘 설계하기 !!
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+#include <map>
+
+using namespace std;
+
+// 5.1 The N-Queens Problem : 체스판에 어떤 두 여왕말도 같은 행, 열, 대각선에 있지 않도록 n개 여왕말을 놓기
+
+vector<int> col;
+int n;
+bool promising(int i)
+{
+    int k = 1;
+    bool flag = true;
+
+    while (k < i && flag)
+    {
+        if ((col[i] == col[k]) || (abs(col[i] - col[k]) == i - k)) // 같은 열, 같은 대각선일 때
+            flag = false;
+        k++;
+    }
+    return flag;
+}
+void queens(int i)
+{
+    if (promising(i))
+    {
+        if (i == n)
+        {
+            for (int j = 1; j <= n; j++)
+                cout << col[j] << ' ';
+        }
+        else
+            for (int j = 1; j <= n; j++)
+            {
+                col[i + 1] = j; // i+1 번째 행에 있는 여왕말을 n개의 열에 놓을 수 있는지 각각 검사
+                queens(i + 1);
+            }
+    }
+}
+
+// 5.2 The Sum-of-Subsets Problem : 합이 W 가 되는 모든 정수의 조합 구하기
+// n개의 양의 정수 배열 W (오름차순 정렬), 양의 정수 W
+
+int W;
+vector<int> w;
+vector<bool> include;
+
+bool promising1(int i, int weight, int total)
+{
+    return (weight + total >= W) && (weight == W || weight + w[i + 1] <= W);
+    // weight : 수준 i 의 마디까지 포함된 무게의 합
+}
+
+void sum_of_subsets(int i, int weight, int total)
+{
+    if (promising1(i, weight, total))
+    {
+        if (weight == W)
+            for (int j = 1; j <= i; j++)
+                cout << include[j] << ' ';
+        else
+        {
+            include[i + 1] = true; // w[i+1] 을 포함
+            sum_of_subsets(i + 1, weight + w[i + 1], total - w[i + 1]);
+            include[i + 1] = false; // w[i+1] 을 포함하지 않음
+            sum_of_subsets(i + 1, weight, total - w[i + 1]);
+        }
+    }
+} // NP-Complete 문제 중 하나.
+
+
+/*
+ Monte-Carlo Algorithm : 확률 알고리즘, 실행할 명령이 무작위로 결정되는 알고리즘.
+ - 표본공간의 무작위 표본의 평균치를 가지고 표본공간에서 정의된 무작위변수의 기대치를 추정
+ 1) 상태공간트리의 같은 수준의 모든 마디에서 같은 유망함수를 사용
+ 2) 상태공간트리에서 같은 수준에 있는 마디들은 모두 자식마디의 개수가 같아야 함
+
+*/
