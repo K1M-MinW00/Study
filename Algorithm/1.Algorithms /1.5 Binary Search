@@ -1,0 +1,45 @@
+// 1.5 이분검색 ( 원소가 n 개인 정렬된 배열 S 에서 원소 x 를 찾으시오. )
+// Input : 자연수 n , (비내림차순으로) 정렬된 배열 S (인덱스의 범위는 1 ~ n) , 원소 x
+// Output : location , S 에서 x 가 있는 위치 (만약 x 가 S 에 없으면 0)
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+void binsearch(int n, vector<int> &S, int x, int &location)
+{
+    int low, high, mid;
+    low = 1;
+    high = n;
+    location = 0;
+
+    while (low <= high && location == 0)
+    {
+        mid = (low + high) / 2;
+        if (x == S[mid])
+            location = mid;
+        else if (x < S[mid])
+            high = mid - 1;
+        else // x > S[mid]
+            low = mid + 1;
+    }
+}
+
+int main()
+{
+    int n, x, location;
+    cin >> n;
+
+    vector<int> S(n + 1);
+
+    for (int i = 1; i <= n; i++)
+        cin >> S[i];
+
+    cin >> x;
+    binsearch(n, S, x, location);
+
+    cout << location;
+    return 0;
+}
