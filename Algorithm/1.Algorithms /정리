@@ -1,0 +1,18 @@
+시간 복잡도 분석
+- T(n) : 일정 시간복잡도(every-case time complexity) , 입력 크기 n 에 대해서 알고리즘이 단위연산을 실행하는 횟수
+
+- W(n) : 최악 시간복잡도(worst-case time complexity) , 입력 크기 n 에 대해서 알고리즘이 실행할 단위연산의 최대 횟수
+
+- A(n) : 평균 시간복잡도(average-case time complexity) , 입력 크기 n 에 대해서 알고리즘이 수행할 단위연산의 평균 횟수
+
+- B(n) : 최선 시간복잡도(best-case time complexity) , 입력 크기 n 에 대해서 알고리즘이 실행할 단위연산의 최소 횟수
+
+=> 시간 복잡도 별 실행 시간 : n -> log(n) -> n*log(n) -> n^2 -> n^3 -> 2^n -> n! 
+    ( const -> log -> linear -> linear log -> quadratic -> cubic -> exponential -> factorial )
+
+메모리(공간) 복잡도 분석
+
+Asymptotic Notations : big O , Omega , Theta
+- big O : 함수의 점근적인 upper bound 를 정함 , O(f(n)) : g(n) <= c * f(n)
+- Omega : 함수의 점근적인 lower bound 를 정함 , Omega(f(n)) : g(n) >= c * f(n)
+- Theta : big O 와 Omega 의 교집합, 차수(order) , Theta(f(n)) : c * f(n) <= g(n) <= d * f(n) 
