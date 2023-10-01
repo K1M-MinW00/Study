@@ -1,0 +1,46 @@
+// 2.6 빠른정렬 (비내림차순으로 원소가 n 개인 배열을 정렬)
+// Input : 양의 정수 n , 배열 S(인덱스는 1부터 n까지)
+// Output : 비내림차순으로 정렬된 배열 S
+
+// 2.7 분할 (빠른정렬에서 쓸 수 있도록 배열 S 를 분할)
+// Input : 인덱스 low, high , 배열 S 에서 low 부터 high 까지의 부분배열
+// Output : low 부터 high 까지 인덱스로 도니 S의 부분배열의 기준점 , pivotpoint
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#define SWAP(x, y, z) ((z) = (x), (x) = (y), (y) = (z))
+
+using namespace std;
+int n;
+vector<int S>;
+
+void partition(int low, int high, int &pivot)
+{
+    int pivotitem = S[low];
+    int j = low, temp;
+
+    for (int i = low + 1; i <= high; i++)
+    {
+        if (S[i] < pivotitem)
+        {
+            j++;
+            SWAP(S[i], S[j], temp);
+        }
+    }
+
+    pivot = j;
+    SWAP(S[low], S[pivot], temp);
+}
+
+void quicksort(int low, int high)
+{
+    int pivot;
+
+    if (low < high)
+    {
+        partition(low, high, pivot);
+        quicksort(low, pivot - 1);
+        quicksort(pivot + 1, high);
+    }
+}
