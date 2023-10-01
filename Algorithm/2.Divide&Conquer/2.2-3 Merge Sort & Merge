@@ -1,0 +1,55 @@
+// 2.2 합병정렬 (n 개 원소를 비내림차순으로 정렬)
+// Input : 양의 정수 n, 배열 S(인덱스는 1 ~ n)
+// Output : 원소를 비내림차순으로 정렬한 배열 S
+
+
+// 2.3 합병 (정렬된 배열 두개를 정렬상태를 유지하면서 하나로 합병)
+// Input : 양의 정수 h, m , 정렬된 배열 U (인덱스는 1 ~ h), 정렬된 배열 V (인덱스는 1 ~ m)
+// Output : U 와 V 의 원소를 모두 포함하여 정렬한 배열 S (인덱스는 1 ~ h + m)
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+void merge(int h, int m, vector<int> U, vector<int> V, vector<int> &S)
+{
+    int i = 1, j = 1, k = 1;
+    while (i <= h && j <= m)
+    {
+        if (U[i] < V[j])
+            S[k] = U[i++];
+
+        else
+            S[k] = V[j++];
+        k++;
+    }
+
+    if (i > h)
+        while (j <= m)
+            S[k++] = V[j++]; // V[j] 부터 V[m] 까지 S[k] 부터 S[h+m]까지 복사
+    else
+        while (i <= h)
+            S[k++] = U[i++]; // U[i] 부터 U[h] 까지 S[k] 부터 S[h+m]까지 복사
+}
+
+void mergesort(int n, vector<int> &S)
+{
+    if (n > 1)
+    {
+        int h = n / 2, m = n - h;
+        vector<int> U(h + 1), V(m + 1);
+
+        for (int i = 1; i <= h; i++)
+            U[i] = S[i]; // Copy S[1..h] to U[1..h]
+
+        for (int i = h + 1; i <= n; i++)
+            V[i - h] = S[i]; // copy S[h+1..n] to V[1..n-h]
+
+        mergesort(h, U);
+        mergesort(m, V);
+        merge(h,m,U,V,S)
+    }
+}
+
+//  W(n) = Theta(n * log(n))
