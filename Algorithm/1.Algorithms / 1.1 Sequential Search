@@ -1,0 +1,37 @@
+// 1.1 순차 검색 (원소가 n 개인 배열 S 에 원소 x 가 있는가? )
+// Input : 정수 n (> 0) , 배열 S (인덱스 범위는 1 ~ n) , 원소 x
+// Output : 원소 x 가 위치한 인덱스를 location 에 저장 (S 안에 x 가 없으면 0 을 저장)
+#include <iostream>
+#include <vector>
+using namespace std;
+
+typedef int keytype;
+typedef int index;
+
+void seqsearch(int n, const keytype S[], keytype x, index &location)
+{
+    location = 1;
+    while (location <= n && S[location] != x)
+        location++;
+
+    if (location > n)
+        location = 0;
+}
+
+int main()
+{
+    int n,x,location;
+
+    cin >> n;
+    vector<int> S(n+1);
+    for(int i=1;i<=n;i++)
+        cin >> S[i];
+    cin >> x;
+
+    int *pS = &S[0];
+    seqsearch(n,pS,x,location);
+
+    cout << location << endl;
+
+    return 0;
+}
