@@ -1,0 +1,27 @@
+// 2.1 이분검색 재귀 (원소가 n 개인 정렬된 배열 S 에 검색 키 x 가 있는가?)
+// Input : 양의 정수 n, 정렬된 (비내림차순) 배열 S(인덱스는 1 ~ n), 검색키 x
+// Output : location , S 에서 x의 위치 (만약 x 가 S 에 없으면 0)
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+typedef int keytype;
+typedef int index;
+
+index location(const keytype S[], index low, index high, keytype x)
+{
+    index mid;
+    if (low > high)
+        return 0;
+    else
+    {
+        mid = (low + high);
+        if (x == S[mid])
+            return mid;
+        else if (x < S[mid])
+            return location(S, low, mid - 1, x);
+        else
+            return location(S, mid + 1, high, x);
+    }
+}
