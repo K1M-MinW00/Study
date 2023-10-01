@@ -1,3 +1,7 @@
+// 2.8 쉬트라쎈(Strassen, n 이 2의 거듭제곱일 때, 2개의 n X n 행렬의 곱을 구하시오.)
+// Input : 2의 거듭제곱인 정수 n, 2개의 n X n 행렬 A 와 B
+// Output : A 와 B 의 곱 C
+
 #include <iostream>
 #include <vector>
 using namespace std;
