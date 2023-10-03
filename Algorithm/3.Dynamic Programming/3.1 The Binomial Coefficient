@@ -1,0 +1,35 @@
+// 3.1-1 분할정복으로 이항계수 구하기
+// Input : k <= n 을 만족하는 0 이상의 정수 n 과 k
+// Output : 이항계수 (n,k)
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+typedef unsigned long long LongInteger;
+
+LongInteger bin(int n, int k)
+{
+    if (k == 0 || k == n)
+        return 1;
+    else
+        return bin(n - 1, k - 1) + bin(n - 1, k);
+}
+
+// 3.1-2 동적계획으로 이항계수 구하기
+// Input : k <= n 을 만족하는 0 이상의 정수 n 과 k
+// Output : 이항계수 (n,k)
+
+LongInteger bin2(int n, int k)
+{
+    vector<vector<LongInteger>> B(n + 1, vector<LongInteger>(n + 1));
+
+    for (int i = 0; i <= n; i++)
+        for (int j = 0; j <= min(i, k); j++)
+            if (j == 0 || j == i)
+                B[i][j] == 1;
+            else
+                B[i][j] = B[i - 1][j] + B[i - 1][j - 1];
+
+    return B[n][k];
+}
