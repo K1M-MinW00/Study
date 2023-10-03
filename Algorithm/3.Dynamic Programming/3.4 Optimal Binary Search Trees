@@ -1,0 +1,89 @@
+// 3.4-1 이분검색트리의 검색 (이분검색트리에서 검색키와 같은 원소가 있는 마디를 찾으시오, 찾는 원소는 나무에 있다고 가정한다.)
+// Input : 이분검색트리를 가리키는 포인터 p 와 검색키 keyin
+// Output : 찾은 원소가 있는 마디를 가리키는 포인터 p
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#define INF 999
+using namespace std;
+
+typedef vector<vector<int>> matrix_t;
+typedef struct node *node_ptr;
+typedef struct node
+{
+    int key;
+    node_ptr left, right;
+} node_t;
+
+void search(node_ptr tree, int keyin, node_ptr &p)
+{
+    bool found;
+
+    p = tree;
+    found = false;
+    while (!found)
+    {
+        if (p->key == keyin)
+            found = tree;
+        else if (keyin < p->key)
+            p = p->left; // 왼쪽 자식 마디로 이동
+        else // keyin > p->key
+            p = p->right; // 오른쪽 자식 마디로 이동
+    }
+}
+
+// 3.4-2 최적 이분검색트리 (주어진 원소의 집합을 가지고 최적 이분검색트리를 구축한다. 여기서 각 원소에 대해 검색키가 될 확률이 주어진다.)
+// Input : n (원소의 개수) , 실수 배열 p (인덱스 범위가 1 ~ n) , p[i] : i 번째 원소를 찾을 확률
+// Output : 최적트리를 구축할 수 있는 2차원 배열 R (행의 인덱스 범위 1 ~ n+1, 열의 인덱스 범위 0 ~ n) , R[i][j] : i번째부터 j번째까지 원소를 포함한 최적트리의 루트에서 원소의 인덱스
+
+int minimum(int i, int j, int &mink, vector<int> &d, matrix_t &M)
+{
+    int minValue = INF, value;
+    for (int k = i; k <= j; k++)
+    {
+        value = M[i][k] + M[k + 1][j] + d[i - 1] * d[k] * d[j];
+        if (minValue > value)
+        {
+            minValue = value;
+            mink = k;
+        }
+    }
+
+    return minValue;
+}
+
+void optsearchtree(int n, vector<int> &p, matrix_t &A, matrix_t &R)
+{
+    for (int i = 1; i <= n; i++)
+    {
+        A[i][i - 1] = 0;
+        A[i][i] = p[i];
+        R[i][i - 1] = 0;
+        R[i][i] = i;
+    }
+    A[n + 1][n] = R[n + 1][n] = 0;
+
+    for (int diagonal = 1; diagonal <= n - 1; diagonal++)
+        for (int i = 1; i <= n - diagonal; i++)
+        {
+            int j = i + diagonal, k;
+            A[i][j] = minimum(i, j, k, p, A);
+            R[i][j] = k;
+        }
+}
+
+node_ptr tree(int i, int j, vector<int> &keys, matrix_t &R)
+{
+    int k = R[i][j];
+    if (k == 0)
+        return NULL;
+    else
+    {
+        node_ptr node;
+        node->key = keys[k];
+        node->left = tree(i, k - 1, keys, R);
+        node->right = tree(k + 1, j, keys, R);
+        return node;
+    }
+}
