@@ -1,0 +1,54 @@
+// 3.2-1 Floyd's Algorithm for Shortest Paths (가중치 포함 그래프의 각 마디에서 다른 모든 마디로 가는 최단 경로를 모두 계산하시오)
+// Input : 마디 개수가 n 인 가중치 포함 방향그래프. 그래프는 2차원 배열 W (행과 열의 인덱스 범위는 1 ~ n) , W[i][j] : 정점 i 에서 정점 j 로 가는 이음선의 가중치
+// Output : 2차원 배열 D(행과 열의 인덱스 범위는 1 ~ n) , D[i][j] : 정점 i 에서 정점 j 로 가는 최단경로의 길이
+
+typedef vector<vector<int>> matrix_t;
+
+void floyd(int n, matrix_t &W, matrix_t &D)
+{
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= n; j++)
+            D[i][j] = W[i][j];
+
+    for (int k = 1; k <= n; k++)
+        for (int i = 1; i <= n; i++)
+            for (int j = 1; j <= n; j++)
+                D[i][j] = min(D[i][j], D[i][k] + D[k][j]);
+}
+// 시간 복잡도 : Theta( n^3 )
+
+// 3.2-2 Floyd's Algorithm for Shortest Paths (3.2-1 + 최단경로 찾기)
+// Input : 마디 개수가 n 인 가중치 포함 방향그래프. 그래프는 2차원 배열 W (행과 열의 인덱스 범위는 1 ~ n) , W[i][j] : 정점 i 에서 정점 j 로 가는 이음선의 가중치
+// Output : 2차원 배열 D (행과 열의 인덱스 범위는 1 ~ n) , D[i][j] : 정점 i 에서 정점 j 로 가는 최단경로의 길이 , 2차원 배열 P (행과 열의 인덱스 범위는 1 ~ n)
+//          P[i][j] : (i 에서 j 까지 가는 최단경로의 중간에 놓여있는 마디가 최소한 하나는 있는 경우) 그 놓여있는 마디 중에서 가장 큰 인덱스
+//          P[i][j] : (i 에서 j 까지 가는 최단경로의 중간에 놓여있는 마디가 없는 경우) 0
+
+void floyd2(int n, matrix_t &W, matrix_t &D, matrix_t &P)
+{
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= n; j++)
+        {
+            D[i][j] = W[i][j];
+            P[i][j] = 0; // 초기화
+        }
+
+    for (int k = 1; k <= n; k++)
+        for (int i = 1; i <= n; i++)
+            for (int j = 1; j <= n; j++)
+                if (D[i][j] > D[i][k] + D[k][j])
+                {
+                    D[i][j] = D[i][k] + D[k][j];
+                    P[i][j] = k;
+                }
+}
+
+void path(matrix_t &P, int u, int v, vector<int> &p)
+{
+    int k = P[u][v]; // u -> k -> v
+    if (k != 0)
+    {
+        path(P, u, k, p); // u -> k
+        p.push_back(k);
+        path(P, k, v, p); // k -> v
+    }
+}
