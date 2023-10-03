@@ -1,0 +1,61 @@
+// 3.3 최소 곱셈 (행렬 n 개를 곱하는데 필요한 원소단위 곱셈의 최소 횟수와 최소 횟수로 행렬 곱셈을 하는 순서를 구하시오)
+// Input : n (행렬의 개수), 정수 배열 d (인덱스의 범위가 0 ~ n) , d[i-1] * d[i] : i 번째 행렬의 크기
+// Ex) A1 (5 X 2) , A2 (2 X 3) , A3 (3 X 4) => d0 = 5 , d1 = 2 , d2 = 3 , d3 =4
+// Output : minmult (n 개 행렬을 곱하는데 필요한 원소단위 곱셈의 최소 횟수), 최적의 순서를 구할 수 있는 2차원 배열 P (행의 인덱스는 1 ~ n-1 , 열의 인덱스는 1 ~ n) , P[i][j] : i 부터 j 까지 행렬을 곱할 때 최적의 순서
+
+// Brute-Force 방법으로 풀면 t_n >= 2^(n-2) 로 exponential
+
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+typedef vector<vector<int>> matrix_t;
+#define INF 999
+
+// M[i][j] : i < j 일 때 A_i 부터 A_j 까지 행렬을 곱하는데 필요한 원소단위 곱셈의 최소 횟수 (M[i][i] = 0)
+// Ex) M[1][6] = min {M[1][k] + M[k+1][6] + d0 * dk * d6} (1 <= k <= 5)
+
+int minimum(int i, int j, int &mink, vector<int> &d, matrix_t &M)
+{
+    int minValue = INF, value;
+    for (int k = i; k <= j; k++)
+    {
+        value = M[i][k] + M[k + 1][j] + d[i - 1] * d[k] * d[j];
+        if (minValue > value)
+        {
+            minValue = value;
+            mink = k;
+        }
+    }
+
+    return minValue;
+}
+void minmult(int n, vector<int> &d, matrix_t &M, matrix_t &P)
+{
+    for (int i = 1; i < -n; i++)
+        M[i][i] = 0; // 초기화
+
+    for (int diagonal = 1; diagonal <= n - 1; diagonal++)
+        for (int i = 1; i <= n - diagonal; i++)
+        {
+            int j = i + diagonal, k;
+            M[i][j] = minimum(i, j, k, d, M);
+            P[i][j] = k;
+        }
+} 
+// 시간복잡도 : Theta(n^3)
+
+void order(int i, int j, matrix_t &P, string &s)
+{
+    if (i == j)
+        s += string("A") + to_string(i);
+    else
+    {
+        int k = P[i][j];
+        s += string("()");
+        order(i, k, P, s);
+        order(k + 1, j, P, s);
+        s += string(")");
+    }
+}
