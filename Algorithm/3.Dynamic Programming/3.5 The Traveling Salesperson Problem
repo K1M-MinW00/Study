@@ -1,0 +1,113 @@
+// 3.5 외판원 문제를 푸는 동적계획 알고리즘 (가중치포함 방향그래프에서 최적일주여행길을 결정하시오. 가중치는 음이 아닌 정수이다. )
+// Input : 2차원 배열 W ( G = (V,E) 의 정보를 adjacency matrix로 표현) , A (V 의 부분집합) , D[v_i][A] : v_i ~ v_1 로 가는 가장 짧은 길이의 경로 , n (그래프에서 도시(마디)의 개수)
+// Output : 변수 minlength (최적일주여행길의 길이) , 2차원 배열 P (최적일주여행길의 경로, 행의 인덱스 범위는 1 ~ n, 열의 인덱스 범위는 V - {v_1} 의 모든 부분집합)
+// P[i][A] : A 에 속한 모든 도시를 정확히 한 번만 거쳐서 v_i 에서 v_1 로 가는 최단경로에서 v_i 에서 다음에 오는 첫 번째 도시의 인덱스
+
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+// optimal length 의 길이는 minimum(W[1][j] + D[v_j][V-{v_1,V_j}]) for 2<= j <= n 이다.
+#define MAX 10
+#define MAX_POW 10
+#define INF 999
+typedef vector<vector<int>> matrix_t;
+
+int minimum(int i, int j, int &mink, vector<int> &d, matrix_t &M)
+{
+    int minValue = INF, value;
+    for (int k = i; k <= j; k++)
+    {
+        value = M[i][k] + M[k + 1][j] + d[i - 1] * d[k] * d[j];
+        if (minValue > value)
+        {
+            minValue = value;
+            mink = k;
+        }
+    }
+
+    return minValue;
+}
+
+// A의 원소의 개수 = 1 의 개수 이므로, Bitwise 연산을 통해 v_i 가 포함되어 있으면 1로, 포함되어 있지 않으면 0으로 생각
+int count(int A)
+{
+    int cnt = 0;
+    for (; A != 0; A >>= 1)
+        if (A & 1)
+            cnt++;
+
+    return cnt;
+} // Ex) S = {v_2, v_3, v_4} , A = {v_2, v_4} : 101 = 5 , count(A) = 2
+
+// 1 이 아닌 i 에 대해 A 안에 v_i 가 존재 하는지 확인
+bool isIn(int i, int A)
+{
+    return (A & (1 << (i - 2))) != 0;
+} // Ex) A = {v_2, v_3, v_4} , i = 4 => True
+
+// A 와 2^(j-2) 의 차이
+int diff(int A, int j)
+{
+    return (A & ~(1 << (j - 2)));
+} // Ex) A={v_2,v_4} : 101 = 5 , j = 4 => diff(A,4) = 1 : {v_2}
+
+int minimum(int n, int i, int &minJ, int A, matrix_t &W, matrix_t &D)
+{
+    int minV = 999, value;
+    for (int j = 2; j <= n; j++)
+    {
+        if (!isIn(j, A))
+            continue;
+        int value = W[i][j] + D[j][diff(A, j)];
+        if (minV > value)
+        {
+            minV = value;
+            minJ = j;
+        }
+    }
+    return minV;
+}
+
+void travel(int n, matrix_t &W, matrix_t &D, matrix_t &P, int &minlength)
+{
+    int i, j, k, A;
+
+    int subset_size = pow(2, n - 1);
+    for (i = 2; i <= n; i++)
+        D[i][0] = W[i][1];
+
+    for (k = 1; k <= n - 2; k++)
+        for (A = 0; A < subset_size; A++)
+        {
+            if (count(A) != k)
+                continue;
+            for (i = 2; i <= n; i++)
+            {
+                if (isIn(i, A))
+                    continue;
+                D[i][A] = minimum(n, i, j, A, W, D);
+                P[i][A] = j;
+            }
+        }
+    A = subset_size - 1; // A = V - {v1}
+    D[1][A] = minimum(n, 1, j, A, W, D);
+    P[1][A] = j;
+    minlength = D[1][A];
+}
+
+void tour(int v, int A, matrix_t &P)
+{
+    int k = P[v][A];
+    if (A == 0)
+        cout << "1";
+    else
+    {
+        cout << k << " -> ";
+        tour(k, diff(A, k), P);
+    }
+}
+
+// optimal tour : 1 -> tour(1, pow(2,n - 1), P);
+// DP 를 통해 푼 외판원 문제의 시간복잡도 : (n^2) * (2^n) 으로 exponential
