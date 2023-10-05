@@ -1,0 +1,175 @@
+// 4.4 허프만 코드 : 데이터 파일을 코드화 하는 효율적인 방법
+// Input : 문자의 개수 n, n 개의 알파벳 문자 , 문자 n개의 빈도값 , 문자열의 개수 T1 , T1개의 텍스트 문자열, 문자열의 개수 T2, T2개의 허프만 코드 문자열
+// Output : 허프만 트리의 preorder traversal , 허프만 트리의 inorder traversal , T1개의 문자열을 인코딩한 허프만 코드 , T2개의 허프만코드를 디코딩한 텍스트 문자열
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <queue>
+#include <map>
+
+using namespace std;
+
+typedef struct node *node_ptr;
+typedef struct node
+{
+    char symbol;
+    int frequency;
+    node_ptr left;
+    node_ptr right;
+} node_t;
+
+struct compare
+{
+    bool operator()(node_ptr p, node_ptr q)
+    {
+        return p->frequency > q->frequency;
+    }
+};
+
+typedef priority_queue<node_ptr, vector<node_ptr>, compare> PriorityQueue;
+
+int n;
+
+node *create_node(char s, int f)
+{
+    node *nodeptr;
+    nodeptr = (node *)malloc(sizeof(node));
+    nodeptr->frequency = f;
+    nodeptr->symbol = s;
+    nodeptr->left = NULL;
+    nodeptr->right = NULL;
+    return nodeptr;
+}
+
+void huffman(PriorityQueue &PQ)
+{
+    for (int i = 1; i <= n - 1; i++)
+    {
+        node_ptr p = PQ.top();
+        PQ.pop();
+        node_ptr q = PQ.top();
+        PQ.pop();
+        node_ptr r = create_node('+', p->frequency + q->frequency);
+        r->left = p;
+        r->right = q;
+        PQ.push(r);
+    }
+}
+
+void make_encoder(node_ptr node, string code, map<char, string> &encoder)
+{
+    if (node->symbol != '+')
+    {
+        encoder[node->symbol] = code;
+    }
+    else
+    {
+        make_encoder(node->left, code + '0', encoder);
+        make_encoder(node->right, code + "1", encoder);
+    }
+}
+
+void decode(node_ptr root, node_ptr node, string s, int i)
+{
+    if (i <= s.length())
+    {
+        if (node->symbol != '+')
+        {
+            cout << node->symbol;
+            decode(root, root, s, i);
+        }
+        else
+        {
+            if (s[i] == '0')
+                decode(root, node->left, s, i + 1);
+            else
+                decode(root, node->right, s, i + 1);
+        }
+    }
+}
+
+void preorder(node *node)
+{
+    if (node != NULL)
+    {
+        printf("%c:%d ", node->symbol, node->frequency);
+        preorder(node->left);
+        preorder(node->right);
+    }
+}
+
+void inorder(node *node)
+{
+    if (node != NULL)
+    {
+        inorder(node->left);
+        printf("%c:%d ", node->symbol, node->frequency);
+        inorder(node->right);
+    }
+}
+
+int main()
+{
+    cin >> n;
+
+    vector<char> s(n + 1);
+    vector<int> t(n + 1);
+    PriorityQueue PQ;
+
+    for (int i = 1; i <= n; i++)
+    {
+        cin >> s[i];
+    }
+    for (int i = 1; i <= n; i++)
+    {
+        cin >> t[i];
+    }
+
+    for (int i = 1; i <= n; i++)
+    {
+        node *tmp = create_node(s[i], t[i]);
+        PQ.push(tmp);
+    }
+
+    huffman(PQ);
+
+    node *node = PQ.top();
+
+    preorder(PQ.top());
+    cout << endl;
+
+    inorder(PQ.top());
+    cout << endl;
+
+    map<char, string> encoder;
+    string st;
+    make_encoder(node, st, encoder);
+
+    int t1;
+    cin >> t1;
+    for (int i = 0; i < t1; i++)
+    {
+        cin >> st;
+        for (int j = 0; j < st.length(); j++)
+            cout << encoder[st[j]];
+        cout << endl;
+    }
+
+    int t2;
+    cin >> t2;
+    for (int i = 0; i < t2; i++)
+    {
+        cin >> st;
+        decode(node, node, st, 0);
+        cout << endl;
+    }
+
+    return 0;
+}
+
+// 허프만 코드
+// - Fixed-length binary code : 각 문자를 표현하는 비트의 개수가 일정. 쓰기 쉽고 편리
+// - variable-length binary code : 각 문자마다 표현하는 비트의 개수가 다름. 데이터 압축 관점에서 훨씬 효율적
+// - prefix code : 전치코드 , 한 문자의 코드워드가 다른 문자의 코드워드의 앞부분이 될 수 없음
+// - 최적 이진 전치코드에 해당되는 이진트리는 Full Tree. 잎이 아닌 마디는 모두 자식 마디가 2개
