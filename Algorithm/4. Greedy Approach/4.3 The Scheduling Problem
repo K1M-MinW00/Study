@@ -1,0 +1,48 @@
+// 4.3 마감시간이 있는 스케줄 짜기 ( 각 작업을 마감시간에 마칠 수 있도록 스케줄을 짠 경우에만 보상을 얻을 수 있을 때 총 보상이 최대가 되도록 스케줄을 짜시오.)
+// Input : 작업의 수 n , 정수 배열 deadline (인덱스 1 ~ n) , deadline[i] : i번째 작업의 마감시간 , 배열은 보상이 큰 것부터 차례로 정렬되어 있음
+// Output : 작업의 최적 순서 J
+
+// 작업 순서 상의 모든 작업들을 마감시간 내에 시작하면, 적절한 순서 (feasible sequence)
+// 작업의 집합에서 최소한 하나의 적당한 순서가 존재하면 적절한 집합 (feasible set)
+// 총 보상이 최대인 적절한 순서 (optimal sequence)
+// 그 순서에 속한 작업의 집합을 작업의 최적 집합 (optimal set of jobs) 라고 함.
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+#include <map>
+
+using namespace std;
+typedef vector<int> sequence_of_integer;
+
+bool is_feasible(sequence_of_integer &K, sequence_of_integer &deadline) // 적절한지 판단
+{
+    for (int i = 1; i < K.size(); i++)
+        if (i > deadline[K[i]])
+            return false;
+    return true;
+}
+
+void schedule(int n, sequence_of_integer &deadline, sequence_of_integer &J)
+{
+    sequence_of_integer K;
+    J.clear();
+    J.push_back(0);
+    J.push_back(1);
+
+    for (int i = 2; i <= n; i++)
+    {
+        K.resize(J.size()); 
+        copy(J.begin(), J.end(), K.begin());
+        int j = 1;
+        while (j < K.size() && deadline[K[j]] <= deadline[i])// K = J 에다가 deadline[i] 의 값이 작은 것부터 차례로 i 를 추가
+            j++;
+        K.insert(K.begin() + j, i);
+        if (is_feasible(K, deadline)) // K 가 적절하면 J = K
+        {
+            J.resize(K.size());
+            copy(K.begin(), K.end(), J.begin());
+        }
+    }
+} // 시간 복잡도 : Theta(n^2)
