@@ -1,0 +1,43 @@
+// 5.1 The N-Queens Problem : 체스판에 어떤 두 여왕말도 같은 행, 열, 대각선에 있지 않도록 n개 여왕말을 놓기
+// Input : 양의 정수 n
+// Output : n X n 서양 장기판에 n 개의 여왕말을 서로 위협받지 않고 놓을 수 있는 가능한 모든 방법
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <map>
+
+using namespace std;
+vector<int> col;
+int n;
+bool promising(int i)
+{
+    int k = 1;
+    bool flag = true;
+
+    while (k < i && flag)
+    {
+        if ((col[i] == col[k]) || (abs(col[i] - col[k]) == i - k)) // 같은 열, 같은 대각선일 때
+            flag = false;
+        k++;
+    }
+    return flag;
+}
+
+void queens(int i)
+{
+    if (promising(i))
+    {
+        if (i == n)
+        {
+            for (int j = 1; j <= n; j++)
+                cout << col[j] << ' ';
+        }
+        else
+            for (int j = 1; j <= n; j++)
+            {
+                col[i + 1] = j; // i+1 번째 행에 있는 여왕말을 n개의 열에 놓을 수 있는지 각각 검사
+                queens(i + 1);
+            }
+    }
+}
