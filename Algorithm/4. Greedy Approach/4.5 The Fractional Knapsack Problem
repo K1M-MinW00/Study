@@ -1,0 +1,84 @@
+// 4.5-1 Knapsack - Greedy Algorithm for Fractional Knapsack Problem (단위 무게 당 가격이 가장 비싼 것) 배낭에 담을 수 있는 최대 무게를 초과하지 않으며 가격이 많이 나가도록 쪼갤 수 있는 물건을 담는 방법
+// Input : 물건의 개수 n, w[] : 물건의 무게 (오름차순) , W : 배낭에 담을 수 있는 무게, P[n][W] : 남은 물건과 담을 수 있는 배낭 무게
+// Output : maxprofit
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+#include <map>
+
+using namespace std;
+
+typedef struct item *item_ptr;
+typedef struct item
+{
+    int id;
+    int weight;
+    int profit;
+    int profit_per_unit;
+} item_t;
+
+int n, W;
+vector<item_t> items;
+
+bool compare_item(item_t i, item_t j)
+{
+    if (i.profit_per_unit > j.profit_per_unit)
+        return true;
+    return false;
+};
+
+void knapsack1(int &maxprofit, int &totweight)
+{
+    maxprofit = totweight = 0;
+
+    for (int i = 1; i <= n; i++)
+    {
+        if (totweight + items[i].weight <= W)
+        {
+            maxprofit += items[i].profit;
+            totweight += items[i].weight;
+        }
+        else
+        {
+            maxprofit += (W - totweight) * items[i].profit_per_unit;
+            totweight += (W - totweight);
+            break; // 계속할 필요 X
+        }
+    }
+}
+
+// 4.5-2 Knapsack - Simple Dynamic programming for the 0-1 Knapsack Problem
+// Input : 물건의 개수 n , w[] : 물건의 무게 (오름차순) , W : 배낭에 담을 수 있는 무게, P[n][W] : 남은 물건과 담을 수 있는 배낭 무게
+// Output : maxprofit
+int knapsack2(int n, int W, int w[], int p[], vector<vector<int>> &P)
+{
+    if (n == 0 || W <= 0)
+        return 0;
+
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= W; j++)
+            P[i][j] = (w[i] > j) ? P[i - 1][j] : max(P[i - 1][j], p[i] + P[i - 1][j - w[i]]);
+
+    return P[0][W];
+}
+
+// 4.5-3 Knapsack - Enhanced Dynamic programming for the 0-1 Knapsack Problem
+// Input : 물건의 개수 n, w[] : 물건의 무게 (오름차순) , W : 배낭에 담을 수 있는 무게, P[n][W] : 남은 물건과 담을 수 있는 배낭 무게
+// Output : maxprofit
+
+int knapsack3(int n, int W, int w[], int p[], map<pair<int, int>, int> &P)
+{
+    if (n == 0 || W <= 0)
+        return 0;
+
+    int lvalue = (P.find(make_pair(n - 1, W)) != P.end()) ? P[make_pair(n - 1, W)] : knapsack3(n - 1, W, w, p, P);                      // 담지 않는 경우
+    int rvalue = (P.find(make_pair(n - 1, W - w[n])) != P.end()) ? P[make_pair(n - 1, W - w[n])] : knapsack3(n - 1, W - w[n], w, p, P); // 담는 경우
+    P[make_pair(n, W)] = (w[n] > W) ? lvalue : max(lvalue, p[n] + rvalue);
+
+    return P[make_pair(n, W)];
+}
+
+// The Fractional Knapsack Problem : 단위 무게 당 이익이 가장 큰 것부터 담으면 됨.
+// 시간 복잡도 : O(minimum(2^n , n*W)
