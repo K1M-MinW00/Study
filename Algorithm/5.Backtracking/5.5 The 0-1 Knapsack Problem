@@ -1,0 +1,58 @@
+// 5.5 The 0-1 Knapsack Problem : 무게의 합이 W 가 넘지 못한다는 제약 하에서 총 값어치가 최대가 되는 아이템의 집합을 구하시오.
+// Input : 양의 정수 n, W , 아이템의 무개 배열 w, 아이템의 가격 배열 p (인덱스의 범위는 1 ~ n , 각 배열은 p[i]/w[i] 값에 따라서 큰 수부터 차례로 정렬된 양의 정수를 포함)
+// Output : 배열 bestset (인덱스의 범위 1 ~ n), bestset[i] : i번째 아이템이 최적의 해에 포함되어 있으면 true, 없으면 false
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+vector<int> w, p;
+int W, n, maxprofit;
+vector<int> bestset, include;
+
+bool promising(int i, int profit, int weight)
+{
+    int j, k, totweight;
+    float bound;
+    
+    if (weight >= W) // 자식마디로 확장할 수 있는지
+        return false;
+    else
+    {
+        j = i + 1;
+        bound = profit;
+        totweight = weight;
+        while (j <= n && totweight + w[j] <= W) // 가능한 많은 아이템 취하기
+        {
+            totweight += w[j];
+            bound += p[j];
+            j++;
+        }
+        k = j;
+        if (k <= n)
+            bound += (W - totweight) * ((float)p[k] / w[k]);
+        return bound > maxprofit;
+    }
+}
+
+void knapsack(int i, int profit, int weight)
+{
+    if (weight <= W && profit > maxprofit)
+    {
+        maxprofit = profit;
+        include = bestset;
+    }
+
+    if (promising(i, profit, weight))
+    {
+        include[i + 1] = true;
+        knapsack(i + 1, profit + p[i + 1], weight + w[i + 1]); // w[i+1] 포함
+        include[i + 1] = false;
+        knapsack(i + 1, profit, weight); // w[i+1] 미 포함
+    }
+}
+
+// maxprofit = 0; knapsack(0,0,0); 최초 호출
+// for(int i = 1;i <= n;i++)
+//    if(bestset[i]) cout << i << ":" << p[i] << " ";
