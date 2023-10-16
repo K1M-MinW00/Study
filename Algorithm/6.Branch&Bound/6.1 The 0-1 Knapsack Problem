@@ -1,0 +1,97 @@
+// 6.1 The BFS with Branch-and-Bound Pruning for the 0-1 Knapsack Problem : 무게의 합이 W 가 넘지 못한다는 제약 하에서 총 이익이 최대가 되는 아이템의 집합을 구한다.
+// Input : 양의 정수 n, W , 아이템의 무개 배열 w, 아이템의 가격 배열 p (인덱스의 범위는 1 ~ n , 각 배열은 p[i]/w[i] 값에 따라서 큰 수부터 차례로 정렬된 양의 정수를 포함)
+// Output : 배열 bestset (인덱스의 범위 1 ~ n), bestset[i] : i번째 아이템이 최적의 해에 포함되어 있으면 true, 없으면 false
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+int W, n, maxprofit, idx;
+vector<int> w, p;
+
+typedef struct node *node_pointer;
+typedef struct node
+{
+    int level;
+    int weight;
+    int profit;
+    float bound;
+} nodetype;
+
+struct compare
+{
+    bool operator()(node_pointer u, node_pointer v)
+    {
+        if (u->bound < v->bound)
+            return true;
+        return false;
+    }
+};
+
+typedef priority_queue<node_pointer, vector<node_pointer>, compare> priority_queue_of_node; // 우선 순위 큐
+
+float bound(node_pointer u)
+{
+    int j, k, totweight;
+    float result;
+    if (u->weight >= W)
+        return 0;
+    else
+    {
+        result = u->profit;
+        j = u->level + 1;
+        totweight = u->weight;
+        while (j <= n && totweight + w[j] <= W) // 가능한 많은 아이템을 취함
+        {
+            totweight += w[j];
+            result += p[j];
+            j++;
+        }
+        k = j;
+        if (k <= n)
+            result += (W - totweight) * ((float)p[k] / w[k]); // k 번째 아이템의 일부분을 취함
+        return result;
+    }
+}
+
+node_pointer create_node(int level, int weight, int profit)
+{
+    node_pointer v = (node_pointer)malloc(sizeof(nodetype));
+    v->level = level;
+    v->weight = weight;
+    v->profit = profit;
+    v->bound = bound(v);
+    return v;
+}
+
+void knapsack()
+{
+    priority_queue_of_node PQ;
+    node_pointer u, v, s;
+    maxprofit = 0;
+    s = create_node(0, 0, 0);
+    PQ.push(s); // s 가 PQ 의 루트노드
+    cout << s->level << ' ' << s->weight << ' ' << s->profit << ' ' << s->bound << endl;
+    while (!PQ.empty())
+    {
+        v = PQ.top();
+        PQ.pop();
+
+        if (v->bound > maxprofit)
+        {
+            u = create_node(v->level + 1, v->weight + w[v->level + 1], v->profit + p[v->level + 1]); // u 를 다음 아이템을 포함하는 v의 자식 마디로 설정
+            cout << u->level << ' ' << u->weight << ' ' << u->profit << ' ' << u->bound << endl;
+            if (u->weight <= W && u->profit > maxprofit)
+                maxprofit = u->profit;
+            if (u->bound > maxprofit)
+                PQ.push(u);
+            u = create_node(v->level + 1, v->weight, v->profit); // u 를 다음 아이템을 포함하지 않는 v의 자식 마디로 설정
+            cout << u->level << ' ' << u->weight << ' ' << u->profit << ' ' << u->bound << endl;
+            if (u->bound > maxprofit)
+                PQ.push(u);
+        }
+    }
+}
