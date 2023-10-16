@@ -1,0 +1,191 @@
+// 6.2 The BFS with Branch-and-Bound Pruning for the Traveling Salesperson Problem : 가중치 포함 방향 그래프에서 최적일주여행길을 결정하시오.
+// Input : 양의 정수 n , 정점이 n 개인 방향 그래프 2차원 배열 W (행과 열의 인덱스는 1 ~ n), W[i][j] : i 번째 정점과 j 번째 정점을 잇는 이음선의 가중치
+// Output : 최적일주여행길의 길이 minlength , 최적 여행경로 opttour
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+#define INF 999
+
+using namespace std;
+
+typedef priority_queue<node_pointer, vector<node_pointer>, compare> priority_queue_of_node;
+typedef vector<vector<int>> matrix_t;
+typedef vector<int> ordered_set;
+matrix_t W;
+ordered_set opttour = {};
+int n;
+int minlength = INF;
+
+typedef struct node *node_pointer;
+typedef struct node
+{
+    int level;
+    ordered_set path;
+    int bound;
+} nodetype;
+
+struct compare
+{
+    bool operator()(node_pointer u, node_pointer v)
+    {
+        if (u->bound > v->bound)
+            return true;
+        return false;
+    }
+};
+
+int length(ordered_set path) // length([1,2,3]) = W[1,2] + W[2,3] 
+{
+    vector<int>::iterator it;
+    int len = 0;
+    for (it = path.begin(); it != path.end(); it++)
+        if (it != path.end() - 1)
+            len += W[*it][*(it + 1)];
+    return len;
+}
+
+bool isIn(int i, ordered_set path)
+{
+    for (int j = 0; j < path.size(); j++)
+        if (path[j] == i)
+            return true;
+    return false;
+}
+
+bool hasOutgoing(int v, ordered_set path) // v 가 path 에 포함되어 다른 점으로 갈 수 있는지
+{
+    vector<int>::iterator it;
+    for (it = path.begin(); it != path.end() - 1; it++)
+        if (*it == v)
+            return true;
+    return false;
+}
+
+bool hasIncoming(int v, ordered_set path) // v 가 path 에 포함되어 다른 점으로부터 들어오는지
+{
+    vector<int>::iterator it;
+    for (it = path.begin() + 1; it != path.end(); it++)
+        if (*it == v)
+            return true;
+    return false;
+}
+
+int bound(node_pointer v)
+{
+    int lower = length(v->path); // 현재까지 왔는 곳의 path length의 lower 값
+
+    for (int i = 1; i <= n; i++)
+    {
+        if (hasOutgoing(i, v->path)) // i 노드에서 v->path 로 돌아가면 무시
+            continue;
+        int min = INF;
+        for (int j = 1; j <= n; j++)
+        {
+            if (i == j)
+                continue; // self-loop 무시
+            if (j == 1 && i == v->path[v->path.size() - 1]) // i 에서 출발로 돌아가면 무시
+                continue;
+            if (hasIncoming(j, v->path)) // incomming node 가 j에서 v->path 로 돌아오면 무시
+                continue; 
+            if (min > W[i][j])
+                min = W[i][j];
+        }
+        if (min != INF)
+            lower += min;
+    }
+    return lower;
+}
+
+node_pointer create_node(int level, ordered_set path)
+{
+    node_pointer v = new node;
+    v->level = level;
+    v->path = path;
+    v->bound = 0;
+    return v;
+}
+
+bool correct_path(node_pointer v)
+{
+    bool flag = true;
+    for (int i = 1; i < v->path.size(); i++)
+    {
+        if (W[v->path[i - 1]][v->path[i]] == INF) // 경로가 없다면
+        {
+            flag = false;
+        }
+    }
+    return flag;
+}
+
+void print(node_pointer v)
+{
+    cout << v->level << ' ';
+    if (!correct_path(v))
+        cout << "INF" << ' ';
+    else
+        cout << v->bound << ' ';
+
+    for (int i = 0; i < v->path.size(); i++)
+    {
+        if (v->path[i] != INF)
+            cout << v->path[i];
+        else
+            cout << "INF";
+
+        if (i == v->path.size() - 1)
+            cout << endl;
+        else
+            cout << ' ';
+    }
+}
+
+void travel(ordered_set &opttour, int &minlength)
+{
+    priority_queue_of_node PQ;
+    node_pointer u, v;
+
+    minlength = INF;
+    v = create_node(0, {1});
+    v->bound = bound(v);
+    print(v);
+    PQ.push(v);
+    while (!PQ.empty())
+    {
+        v = PQ.top();
+        PQ.pop();
+        if (v->bound < minlength) // pruning 조건
+        {
+            for (int i = 2; i <= n; i++)
+            {
+                if (isIn(i, v->path))
+                    continue;
+                u = create_node(v->level + 1, v->path);
+                u->path.push_back(i);
+                u->bound = bound(u);
+                // print(u);
+                if (u->level == n - 2) // 마지막 경로 빼고 다 설정됐음
+                {
+                    for (int k = 2; k <= n; k++)
+                        if (!isIn(k, u->path))
+                            u->path.push_back(k);
+                    u->path.push_back(1); // 마지막은 1로 돌아가야함
+                    if (length(u->path) < minlength)
+                    {
+                        minlength = length(u->path);
+                        opttour = u->path;
+                    }
+                }
+                else
+                {
+                    u->bound = bound(u);
+                    if (u->bound < minlength)
+                        PQ.push(u);
+                }
+                print(u);
+            }
+        }
+    }
+}
