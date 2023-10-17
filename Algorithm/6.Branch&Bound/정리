@@ -1,0 +1,7 @@
+Branch & Bound :Backtracking 알고리즘을 개선.
+  - Backtracking 과 유사하게 상태공간트리를 사용
+  - 최적화 문제를 푸는데 만 쓰임
+  - 어떤 마디가 유망한지를 결정하기 위해서 그 마디에서의 한계값(Bound) 를 계산
+  - 그 한계 값이 그때까지 찾은 최고 해답 값보다 더 좋지 않으면 유망하지 않고(non-promising), 그렇지 않으면 그 마디는 유망함(promising)
+  - Breadth-First-Search with B&B pruning : 분기한정 가지치기 너비우선탐색 (queue 사용)
+  - Best-First-Search with B&B pruning : 분기한정 가지치기 최고우선탐색(얼마나 유망한지 판단, 가장 유망한 것 부터 체크)
