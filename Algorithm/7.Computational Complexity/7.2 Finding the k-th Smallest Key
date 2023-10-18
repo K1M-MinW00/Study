@@ -1,0 +1,68 @@
+// 7.2-1 Finding the k-th smallest Key : k 번째로 작은 키 찾기
+// Input : 양의 정수 n , 정수 배열 L (인덱스는 0 ~ n - 1)
+// Output : k 번째로 작은 키
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int main()
+{
+  int n,k;
+  cin >> n >> k;
+  vector<int> S(n+1);
+
+  for(int i = 1;i <= n;i++)
+    cin >> S[i];
+
+  sort(S.begin(),S.end());
+  cout << S[k] << endl;
+  return 0;
+} // sort 한 뒤, k 번째 키를 반환 -> Theta(n * log n)
+
+// 7.2-2 : Finding the k-th smallest Key with Selection by Partitioning : n 개 다른 키로 된 배열 S 에서 k-번째 작은 키를 찾으시오.
+// Input : k<=n 인 양의 정수 n, k , 서로 다른 키의 배열 S (인덱스는 1 ~ n)
+// Output : k 번째 작은 키
+
+
+#define SWAP(x, y, z) ((z) = (x), (x) = (y), (y) = (z))
+int n;
+vector<int> S;
+
+void partition(int low, int high, int &pivot)
+{
+    int pivotitem = S[low];
+    int j = low, temp;
+
+    for (int i = low + 1; i <= high; i++)
+    {
+        if (S[i] < pivotitem)
+        {
+            j++;
+            SWAP(S[i], S[j], temp);
+        }
+    }
+
+    pivot = j;
+    SWAP(S[low], S[pivot], temp);
+}
+
+int selection(int low, int high, int k)
+{
+    int pivotpoint;
+
+    if (low == high)
+        return S[low];
+    else
+    {
+        partition(low, high, pivotpoint);
+        if (k == pivotpoint)
+            return S[pivotpoint];
+        else if (k < pivotpoint)
+            return selection(low, pivotpoint - 1, k);
+        else
+            return selection(pivotpoint + 1, high, k);
+    }
+} // selection(1,n,k); 최초 호출 , 시간복잡도 : W(n) = n*(n-1)/2
