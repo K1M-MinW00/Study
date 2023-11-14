@@ -1,0 +1,65 @@
+//문제 : https://school.programmers.co.kr/learn/courses/30/lessons/118666
+
+#include <string>
+#include <vector>
+
+using namespace std;
+
+string solution(vector<string> survey, vector<int> choices) {
+    string answer = "";
+    int n = survey.size();
+    vector<int> score(4,0); // RT-CF-JM-AN
+    
+    vector<int> s1 = {0,3,2,1,0,-1,-2,-3};
+    vector<int> s2 = {0,-3,-2,-1,0,1,2,3};
+    
+    for(int i=0;i<n;i++)
+    {
+        if(survey[i]=="RT")
+            score[0]+=s1[choices[i]];
+
+        else if(survey[i]=="TR")
+            score[0]+=s2[choices[i]];
+
+        else if(survey[i]=="CF")
+            score[1]+=s1[choices[i]];
+
+        else if(survey[i]=="FC")
+            score[1]+=s2[choices[i]];
+
+        else if(survey[i]=="JM")
+            score[2]+=s1[choices[i]];
+
+        else if(survey[i]=="MJ")
+            score[2]+=s2[choices[i]];
+
+        else if(survey[i]=="AN")
+            score[3]+=s1[choices[i]];
+
+        else if(survey[i]=="NA")
+            score[3]+=s2[choices[i]];
+    }
+    
+    if(score[0]>=0)
+        answer+="R";
+    else
+        answer+="T";
+    
+    if(score[1]>=0)
+        answer+="C";
+    else
+        answer+="F";
+    
+    if(score[2]>=0)
+        answer+="J";
+    else
+        answer+="M";
+    
+    if(score[3]>=0)
+        answer+="A";
+    else
+        answer+="N";
+    
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
