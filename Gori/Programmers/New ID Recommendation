@@ -1,0 +1,64 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/72410
+
+#include <string>
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
+string solution(string new_id)
+{
+    string answer = "";
+
+    for (int i = 0; i < new_id.length(); i++)
+    {
+        if (65 <= new_id[i] && new_id[i] <= 90) // step 1 (upper -> lower)
+            new_id[i] += 32;
+    }
+
+    for (int i = 0; i < new_id.length(); i++) // step 2
+    {
+        if ((97 <= new_id[i] && new_id[i] <= 122) || (48 <= new_id[i] && new_id[i] <= 57) || (new_id[i] == '-') || (new_id[i] == '_') || (new_id[i] == '.')) // step 2
+            continue;
+        else
+        {
+            new_id.erase(i, 1);
+            i--; // i 번째 인덱스를 지웠으니 다음 확인할 인덱스는 다시 i 번째가 됨
+        }
+    }
+
+    for (int i = 0; i < new_id.length() - 1; i++) // step 3
+    {
+        if (new_id[i] == '.' && new_id[i + 1] == '.')
+        {
+            new_id.erase(i, 1);
+            i--; // 마찬가지로 i 번째 인덱스를 지웠으니 다음 확인할 인덱스는 다시 i 번째
+        }
+    }
+
+
+    if (new_id.front() == '.') // step 4
+        new_id.erase(0, 1);
+
+    if (new_id.back() == '.')
+        new_id.pop_back();
+
+    if (new_id.empty()) // step 5
+        new_id = "a";
+
+    if (new_id.length() >= 16) // step 6
+    {
+        new_id = new_id.substr(0, 15);
+        if (new_id.back() == '.')
+            new_id.pop_back();
+    }
+
+    if (new_id.length() <= 2) // step 7
+    {
+        while (new_id.length() < 3)
+            new_id += new_id.back();
+    }
+
+    return new_id;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
