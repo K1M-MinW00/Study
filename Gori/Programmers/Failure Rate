@@ -1,0 +1,42 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/42889
+
+#include <string>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+vector<int> solution(int N, vector<int> stages)
+{
+    vector<int> answer;
+    vector<int> fail(N + 1, 0); // 실패한 사람들 수를 담을 vector
+
+    int total = stages.size();
+
+    sort(stages.begin(), stages.end());
+
+    for (int i = 0; i < stages.size(); i++)
+        fail[stages[i]]++;
+
+    vector<pair<double,int>> p; // 실패율과 stage 단계를 담을 vector
+
+    for (int i = 1; i < fail.size(); i++)
+    {
+        if(total>0)
+            p.push_back(make_pair(double(fail[i])/total,i));
+
+        else // total = 0 일때, N/0 이 되는 경우 예외 처리
+            p.push_back(make_pair(0,i));
+
+        total -= fail[i];
+    }
+
+    sort(p.begin(), p.end(), [](const pair<double, int> &a, const pair<double, int> &b) {
+    if (a.first == b.first) return a.second < b.second;
+    return a.first > b.first;}); // sort 시 p.first 로 내림차순, 같다면 p.second 로 오름차순
+
+    for (int i =0; i<p.size(); i++)
+        answer.push_back(p[i].second);
+
+    return answer;
+}
