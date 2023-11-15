@@ -1,4 +1,4 @@
-// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/150370/solution_groups?language=cpp&type=my
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/150370
 // month 를 기준으로 계산한 풀이
 
 #include <string>
