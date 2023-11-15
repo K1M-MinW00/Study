@@ -1,0 +1,85 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/150370/solution_groups?language=cpp&type=my
+// month 를 기준으로 계산한 풀이
+
+#include <string>
+#include <vector>
+#include <iostream>
+#include <map>
+using namespace std;
+
+bool calculate(string today, string date, int month)
+{
+    int ty = stoi(today.substr(0, 4));
+    int tm = stoi(today.substr(5, 2));
+    int td = stoi(today.substr(8, 2));
+
+    int dy = stoi(date.substr(0, 4));
+    int dm = stoi(date.substr(5, 2));
+    int dd = stoi(date.substr(8, 2));
+
+    int cy, cm, cd;
+
+    cd = dd;
+    if (month >= 12)
+    {
+        cm = dm + month % 12;
+        cy = dy + month / 12;
+    }
+    else
+    {
+        cm = dm + month;
+        cy = dy;
+    }
+
+    if (cm > 12)
+    {
+        cm = cm % 12;
+        cy += 1;
+    }
+
+    //cout << date << " + " << month << " = " << cy << '.' << cm << '.' << cd << " VS " << today << endl;
+    
+    // 파기 해야한다면 true, 기한이 남았다면 false
+    if (cy < ty)
+        return true;
+    if (cy == ty && cm < tm)
+        return true;
+    if (cy == ty && cm == tm && cd <= td)
+        return true;
+
+    return false;
+}
+
+vector<int> solution(string today, vector<string> terms, vector<string> privacies)
+{
+    vector<int> answer;
+    map<char, int> t; // 약관 종류 - 유효 기간 정보
+    char c;
+    string temp;
+    int n;
+
+    for (int i = 0; i < terms.size(); i++)
+    {
+        c = terms[i][0];
+        temp = terms[i].substr(2, 4);
+        n = stoi(temp);
+
+        t[c] = n;
+    }
+
+    for (int i = 0; i < privacies.size(); i++)
+    {
+        string date = privacies[i].substr(0, 10);
+        c = privacies[i][11];
+        int month = t[c];
+
+        if (calculate(today, date, month) == true)
+            answer.push_back(i + 1);
+    }
+
+    for (int i = 0; i < answer.size(); i++)
+        cout << answer[i] << ' ';
+
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
