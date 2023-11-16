@@ -1,0 +1,26 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/68935
+
+#include <string>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+
+int solution(int n) {
+    int answer = 0;
+    
+    vector<int> t; // 3진법으로 숫자를 저장할 벡터
+    while(n)
+    {
+        t.push_back(n%3); // 3 으로 나눈 나머지
+        n = n/3;
+    }
+    
+    reverse(t.begin(),t.end()); // 뒤집기
+    
+    for(int i=0;i<t.size();i++)
+        answer +=(t[i]*pow(3,i)); // 3진법을 다시 10진법으로
+    return answer;
+}
+
+//// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
