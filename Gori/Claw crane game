@@ -1,0 +1,60 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/64061
+
+#include <string>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int solution(vector<vector<int>> board, vector<int> moves)
+{
+    int answer = 0;
+
+    vector<vector<int>> s(board.size()); // board 에서 0 이 아닌, 인형들만 추출한 2차원 벡터
+    vector<int> p; // 뽑은 인형들을 저장할 벡터
+
+    for (int i = 0; i < board.size(); i++)
+    {
+        for (int j = 0; j < board[i].size(); j++)
+        {
+            if (board[i][j]) // 0이 아닌 값들만 추출
+                s[j].push_back(board[i][j]);
+        }
+    }
+
+    int idx = moves[0] - 1; // moves 의 첫번째 원소를 p 에 저장
+    if (!s[idx].empty())
+    {
+        p.push_back(s[idx].front());
+        s[idx].erase(s[idx].begin());
+    }
+
+    for (int i = 1; i < moves.size(); i++)
+    {
+        idx = moves[i] - 1;
+        if (!s[idx].empty()) // 뽑으려는 칸에 인형이 없다면 
+        {
+            if (s[idx].front() == p.back()) // 뽑은 것 중에 같은 인형이 연속해서 2개 생길 때
+            {
+                answer += 2;
+                p.pop_back();
+            }
+            else // 없다면 인형 뽑은 곳에 추가
+                p.push_back(s[idx].front());
+
+            s[idx].erase(s[idx].begin());
+        }
+    }
+
+    return answer;
+}
+
+int main()
+{
+    vector<vector<int>> b = {{0, 0, 0, 0, 0}, {0, 0, 1, 0, 3}, {0, 2, 5, 0, 1}, {4, 2, 4, 4, 2}, {3, 5, 1, 3, 1}};
+    vector<int> m = {1, 5, 3, 5, 1, 2, 1, 4};
+
+    solution(b, m);
+}
+
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
