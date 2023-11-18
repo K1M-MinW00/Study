@@ -1,0 +1,28 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/12926
+#include <string>
+#include <vector>
+
+using namespace std;
+
+string solution(string s, int n) {
+    string answer = "";
+    
+    int c;
+    for(int i=0;i<s.length();i++)
+    {     
+        c = s[i] + n; // 'z' 는 아스키 코드로 122 인데 char 형은 127 까지 저장할 수 있으므로 저장할 수 있는 범위를 넘어버려서 따로 계산해줘야 함
+        if('a'<=s[i] && s[i]<='z')
+        {
+            if(c > 'z') c -= 26;
+            s[i] = char(c);
+        }
+        else if('A'<=s[i] && s[i]<='Z')
+        {
+            if(c>'Z') c -= 26;
+            s[i] = char(c);
+        }
+    }
+    return s;
+}
+
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
