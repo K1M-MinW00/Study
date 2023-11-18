@@ -1,0 +1,26 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/12926
+#include <string>
+#include <vector>
+
+using namespace std;
+
+string solution(string s, int n) {
+    string answer = "";
+    for(int i=0;i<s.length();i++)
+    {        
+        if(65<=s[i] && s[i]<=90)
+        {
+            s[i]+=n;
+            if(s[i]>90)
+                s[i] -=26;
+        }
+        else if(97<=s[i] && s[i]<=122)
+        {
+            s[i]+=n;
+            if(s[i]>122)
+                s[i] -=26;
+        }
+    }
+    return s;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
