@@ -1,0 +1,30 @@
+// 문자 : https://school.programmers.co.kr/learn/courses/30/lessons/12930
+
+#include <string>
+#include <vector>
+
+using namespace std;
+
+string solution(string s) {
+    string answer = "";
+    
+    int n = 0;
+    for(int i=0;i<s.length();i++)
+    {  
+        if(s[i]==' ') // 공백
+            n=0;
+        else if(n%2==0) // 짝수
+        {
+            s[i] = toupper(s[i]);
+            n++;
+        }    
+        else if(n%2==1) // 홀수
+        {
+            s[i] = tolower(s[i]);
+            n++;
+        }    
+    }
+    return s;
+}
+
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
