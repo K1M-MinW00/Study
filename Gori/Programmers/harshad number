@@ -1,0 +1,24 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/12947
+
+#include <string>
+#include <vector>
+using namespace std;
+
+bool solution(int x) {
+    bool answer = true;
+    
+    int d = x;
+    int sum = 0;
+    while(d>0)
+    {
+        sum +=(d%10);
+        d/=10;   
+    }
+    
+    if(x%sum!=0)
+        answer = false;
+    
+    return answer;
+}
+
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
