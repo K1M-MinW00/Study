@@ -1,0 +1,35 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/250125
+
+#include <string>
+#include <vector>
+
+using namespace std;
+
+int solution(vector<vector<string>> board, int h, int w) {
+    int answer = 0;
+    
+    int n = board.size();
+    vector<vector<string>> b(n+2,vector<string>(n+2,"none"));
+    
+    for(int i=1;i<=n;i++)
+        for(int j=1;j<=n;j++)
+            b[i][j]=board[i-1][j-1];// board 의 주변을 "none"으로 둘러싼 2차원 벡터
+         
+    h++;w++; // board 주변을 둘러 쌓았으므로 1씩 더한 좌표가 됨
+
+    // 위
+    if(b[h-1][w]==b[h][w])
+        answer++;
+    // 아래                         
+    if(b[h+1][w]==b[h][w])
+        answer++;
+    // 왼쪽
+    if(b[h][w-1]==b[h][w])
+        answer++;
+    // 오른쪽
+    if(b[h][w+1]==b[h][w])
+        answer++;
+                             
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
