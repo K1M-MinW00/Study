@@ -1,0 +1,27 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/42576
+
+#include <string>
+#include <vector>
+#include <unordered_map>
+using namespace std;
+
+string solution(vector<string> participant, vector<string> completion)
+{
+    string answer = "";
+    
+    unordered_map<string, int> m; // unordered_map 으로 participant 를 저장하고 1을 더하고 , 완주한 사람은 1을 빼줌
+
+// auto : 초기화 값에 따라 데이터 타입을 정해주는 키워드
+    for(auto elem : participant)
+        m[elem]++;
+    
+    for(auto elem : completion)
+        m[elem]--;
+    
+    for(auto it = m.begin();it!=m.end();it++)
+        if(it->second==1)
+            answer = it->first;
+
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
