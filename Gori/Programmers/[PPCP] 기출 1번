@@ -1,0 +1,42 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/250137
+#include <string>
+#include <vector>
+#include <iostream>
+using namespace std;
+
+int solution(vector<int> bandage, int health, vector<vector<int>> attacks) {
+    
+    int time = attacks[attacks.size()-1][0]; // 총 시간
+    int idx = 0; // attacks 를 가리킬 index
+    int hp = health; // 최초 체력
+    int cs = 0; // continous success 연속 성공
+
+    for(int i=1;i<=time;i++) // 초 단위로 진행
+    {
+        cs++; // 연속 성공
+        
+        if(i==attacks[idx][0]) // 공격 받았을 때
+        {
+            hp -= attacks[idx][1];
+            cs = 0; // 연속 공격 초기화
+            idx++; // 다음 attack index 설정
+            if(hp<=0) // 죽었을 때
+                return -1;
+        }
+        else // 회복 중
+        {
+            hp += bandage[1]; // 초당 회복량
+            if(cs==bandage[0]) // 시전 시간    
+            {
+                cs=0; // 연속 성공 초기화
+                hp += bandage[2]; // 연속 성공 추가 체력
+            }
+        }
+        
+        if(hp>health) // 최대 체력을 넘지 못하게
+            hp = health;
+    }
+    
+    return hp;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
