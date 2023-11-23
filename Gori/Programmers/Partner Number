@@ -1,0 +1,41 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/131128?language=cpp
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+string solution(string X, string Y) {
+    string answer = "";
+    sort(X.begin(),X.end());
+    sort(Y.begin(),Y.end());
+    
+    vector<int> x(10,0); // 0~9
+    vector<int> y(10,0); // 0~9
+    
+    for(int i=0;i<X.length();i++)
+        x[X[i]-'0']++; // X 의 원소 중 0~9 까지 개수를 저장
+    
+    for(int i=0;i<Y.length();i++)
+        y[Y[i]-'0']++; // Y 의 원소 중 0~9 까지 개수를 저장
+    
+    
+    for(int i=9;i>=0;i--) // 가장 큰 수를 리턴 해야하므로 0~9 중 9 부터 시작
+    {
+        int m = min(x[i],y[i]); // 둘 중 작은 수 저장
+        if(m>0)
+        {
+            for(int j=0;j<m;j++)
+                answer += to_string(i);
+        }
+    }
+    
+    if(answer[0] == '0') // answer 이 00, 000 과 같은 경우, 0 으로 예외 처리
+        answer = "0";
+    
+    if(answer.empty()) // 짝꿍이 없을 경우, "-1" 로 예외 처리
+        answer = "-1";
+
+    return answer;
+}
+
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
