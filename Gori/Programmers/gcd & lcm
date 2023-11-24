@@ -1,0 +1,37 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/12940
+
+#include <string>
+#include <vector>
+
+using namespace std;
+
+int gcd(int a,int b) // 유클리드 호제법
+{
+    if(b==0)
+        return a;
+        
+    if(a%b==0) // a 가 b 로 나누어 떨어질 때
+        return b; 
+    else // a 를 b 로 나눈 나머지 와 b 의 gcd
+        return gcd(b,a%b);
+}
+
+vector<int> solution(int n, int m) {
+    vector<int> answer;
+    
+    if(n<m)
+    {
+        int temp = m;
+        m = n;
+        n = temp;
+    } // n > m 으로 설정
+    
+    int g = gcd(n,m);
+    int l = n*m / g;
+    
+    answer.push_back(g);
+    answer.push_back(l);
+    
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
