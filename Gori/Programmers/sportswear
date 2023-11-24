@@ -1,0 +1,47 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/42862#
+
+#include <string>
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
+int solution(int n, vector<int> lost, vector<int> reserve) {
+    int answer = 0;
+    
+    vector<int> s(n+2,1);
+    s[0]=0;
+    s[n+1]=0;
+    
+    for(int i=0;i<lost.size();i++)
+        s[lost[i]]--;
+    
+    for(int i=0;i<reserve.size();i++)
+        s[reserve[i]]++;
+    
+    
+    for(int i=1;i<=n;i++)
+    {
+        if(s[i]==0)
+        {
+            if(s[i-1]==2) // 앞의 친구에게 빌릴 수 있을 때
+            {
+                s[i-1]--;
+                s[i]++;
+            }
+            else if(s[i+1]==2) // 뒤의 친구에게 빌릴 수 있을 때
+            {
+                s[i+1]--;
+                s[i]++;
+            }
+        }
+    }
+    
+    for(int i=1;i<=n;i++)
+    {
+        if(s[i]>0)
+            answer++;
+    }
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
