@@ -1,0 +1,100 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/172928
+
+#include <string>
+#include <vector>
+using namespace std;
+
+vector<int> solution(vector<string> park, vector<string> routes) {
+    vector<int> answer;
+    
+    int h = park.size();
+    int w = park[0].size();
+
+    int r,c; // 출발점
+    for(int i=0;i<h;i++)
+    {
+        for(int j=0;j<w;j++)
+        {
+            if(park[i][j]=='S')
+            {
+                r = i;
+                c = j;
+                break;
+            }
+        }
+    }
+    
+    string d; // 방향
+    int n; // 이동할 수
+    bool fail = false ; // 2가지 기준 중 하나라도 실패하면 true, 둘 다 부합하면 false
+
+    for(int i=0;i<routes.size();i++)
+    {
+        d = routes[i][0];
+        n = int(routes[i][2]-'0');
+
+        if(d=="W") // 서쪽 이동
+        {
+            for(int j=1;j<=n;j++)
+            {
+                if(park[r][c-j]=='X' || c-j<0) // 장애물 있거나, 밖으로 나갈 경우
+                {
+                    fail = true;
+                    break;
+                }
+            }
+            
+            if(!fail)
+                c=c-n;
+        }
+        
+        else if(d=="E") // 동쪽 이동
+        {
+            for(int j=1;j<=n;j++)
+            {
+                if(park[r][c+j]=='X' || c+j>w-1) // 장애물 있거나, 밖으로 나갈 경우
+                {
+                    fail = true;
+                    break;
+                }
+            }
+            
+            if(!fail)
+                c=c+n;
+        }
+        else if(d=="N") // 북쪽 이동
+        {
+            for(int j=1;j<=n;j++)
+            {
+                if(park[r-j][c]=='X' || r-j<0) // 장애물 있거나, 밖으로 나갈 경우
+                {
+                    fail = true;
+                    break;
+                }
+            }
+            
+            if(!fail)
+                r=r-n;
+        }
+        else if(d=="S") // 남쪽 이동
+        {
+            for(int j=1;j<=n;j++)
+            {
+                if(park[r+j][c]=='X' || r+j>h-1) // 장애물 있거나, 밖으로 나갈 경우
+                {
+                    fail = true;
+                    break;
+                }
+            }
+            
+            if(!fail)
+                r=r+n;
+        }
+        fail = false; // 기준 초기화
+    }
+    
+    answer.push_back(r);
+    answer.push_back(c);
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
