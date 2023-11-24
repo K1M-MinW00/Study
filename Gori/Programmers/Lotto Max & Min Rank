@@ -1,0 +1,55 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/77484
+
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+vector<int> solution(vector<int> lottos, vector<int> win_nums) {
+    vector<int> answer;
+    
+    int zero_cnt = 0;
+    int same_cnt = 0;
+    
+    for(int i=0;i<6;i++)
+    {
+        if(lottos[i]==0) // 알아볼 수 없는 번호 개수
+            zero_cnt++;
+
+        for(int j=0;j<6;j++)
+        {
+            if(lottos[i]==win_nums[j]) // 당첨된 번호 개수
+                same_cnt++;
+        }
+    }
+
+    int min = same_cnt; // 맞출 수 있는 최저 개수
+    int max = same_cnt + zero_cnt; // 맞출 수 있는 최대 개수
+    
+    switch(min)
+    {
+        case 0 :
+        case 1 : min = 6; break;
+        case 2 : min = 5; break;
+        case 3 : min = 4; break;
+        case 4 : min = 3; break;
+        case 5 : min = 2; break;
+        case 6 : min = 1; break;
+    }
+    
+    switch(max)
+    {
+        case 0 :
+        case 1 : max = 6; break;
+        case 2 : max = 5; break;
+        case 3 : max = 4; break;
+        case 4 : max = 3; break;
+        case 5 : max = 2; break;
+        case 6 : max = 1; break;
+    }
+    
+    answer.push_back(max);
+    answer.push_back(min);
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
