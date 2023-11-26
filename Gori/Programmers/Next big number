@@ -1,0 +1,49 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/12911
+
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+string tobi(int c)
+{
+    string binary = "";
+    int r;
+    while(c)
+    {
+        r=c%2;
+        binary+= to_string(r);
+        c/=2;
+    }
+    reverse(binary.begin(),binary.end());
+    return binary;
+}
+
+int solution(int n) {
+    int answer = 0;
+    
+    string n1 = tobi(n);
+    int n1_size = 0;
+    
+    for(int i=0;i<n1.length();i++)
+        if(n1[i]=='1')
+            n1_size++; 
+
+    string n2; // 다음 숫자의 이진 표현을 저장
+    int n2_size; // 1의 개수를 저장
+
+    for(int i = n+1;;i++)
+    {
+        n2 = tobi(i);
+        n2_size = 0;
+        for(int i=0;i<n2.length();i++)
+        {
+            if(n2[i]=='1')
+                n2_size++;
+        }
+        
+        if(n1_size == n2_size)
+            return i;
+    }
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
