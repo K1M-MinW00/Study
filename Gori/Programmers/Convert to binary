@@ -27,7 +27,7 @@ vector<int> solution(string s) {
     while(s!="1")
     {
         size = s.length(); // x 의 원래 길이
-        s.erase(remove(s.begin(), s.end(), '0'), s.end());
+        s.erase(remove(s.begin(), s.end(), '0'), s.end()); // remove 함수를 통해 해당하는 원소를 맨 마지막으로 보내고, 해당 범위를 리턴함 -> erase 함수로 해당 범위부터 끝까지 삭제
         c = s.length(); // 0 제거 후 길이
         s = tobi(c);
         answer[0] ++; // 변환 횟수
