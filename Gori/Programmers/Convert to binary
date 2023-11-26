@@ -16,6 +16,7 @@ string tobi(int c)
         binary+= to_string(r);
         c/=2;
     }
+    reverse(binary.begin(),binary.end());
     return binary;
 }
 
