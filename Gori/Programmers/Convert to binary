@@ -1,0 +1,38 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/70129
+
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+string tobi(int c)
+{
+    string binary = "";
+    int r;
+    while(c)
+    {
+        r=c%2;
+        binary+= to_string(r);
+        c/=2;
+    }
+    return binary;
+}
+
+vector<int> solution(string s) {
+    vector<int> answer(2,0);
+    
+    int size,c;
+    
+    while(s!="1")
+    {
+        size = s.length(); // x 의 원래 길이
+        s.erase(remove(s.begin(), s.end(), '0'), s.end());
+        c = s.length(); // 0 제거 후 길이
+        s = tobi(c);
+        answer[0] ++; // 변환 횟수
+        answer[1] += (size-c); // 제거된 0 의 개수
+    }
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
