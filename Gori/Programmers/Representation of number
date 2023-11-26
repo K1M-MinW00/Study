@@ -1,0 +1,28 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/12924
+
+#include <string>
+#include <vector>
+#include <iostream>
+using namespace std;
+
+int solution(int n) {
+    int answer = 0;
+    int sum=0, num=1;
+    
+    while(1)
+    {
+        sum = 0;
+        for(int i=1;i<=num;i++)
+            sum +=i; // 연속해서 더해지는 숫자
+        
+        if(sum>n) // 탈출 조건
+            break;
+        
+        if((n-sum)%num==0) // 더한 수 만큼 나눠 떨어진다면 표현 가능
+            answer++;
+        num++;
+    }
+    
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
