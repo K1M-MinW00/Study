@@ -1,0 +1,41 @@
+// 문제 :https://school.programmers.co.kr/learn/courses/30/lessons/12939
+
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+string solution(string s) {
+    string answer = "";
+    
+    vector<string> str;
+    vector<int> num;
+    string n = "";
+    
+    for(int i=0;i<s.length();i++)
+    {
+        if(s[i] != ' ')
+            n += s[i];
+        else
+        {
+            str.push_back(n);
+            n = "";
+        }
+    }
+    str.push_back(n); // 마지막 원소
+    
+    for(int i=0;i<str.size();i++)
+        num.push_back(stoi(str[i]));
+    
+    sort(num.begin(),num.end());
+    
+    int min = num.front();
+    int max = num.back();
+    
+    answer += to_string(min);
+    answer += ' ';
+    answer += to_string(max);
+    
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
