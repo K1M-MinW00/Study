@@ -1,0 +1,42 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/12981
+
+#include <string>
+#include <vector>
+#include <map>
+using namespace std;
+
+vector<int> solution(int n, vector<string> words) {
+    vector<int> answer;
+
+    map<string,int> m;
+    
+    int num=0,turn=0;
+    char last=words[0][0];
+    char first;
+
+    for(int i=0;i<words.size();i++)
+    {
+        m[words[i]]++;
+        first = words[i][0];
+
+        if(last != first) // 끝말잇기 조건을 만족하지 못해 탈락할 때
+        {
+            num = i % n + 1;
+            turn = i / n + 1;
+            break;
+        }
+        if(m[words[i]]>=2) // 중복 단어로 탈락할 때
+        {
+            num = i%n+1;
+            turn = i/n+1;
+            break;
+        }
+        last = words[i].back();
+    }
+
+    answer.push_back(num);
+    answer.push_back(turn);
+
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
