@@ -1,0 +1,26 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/12973
+
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+int solution(string s)
+{
+    vector<char> str; // stack 처럼 사용
+
+    for(int i=0;i<s.length();i++)
+    {
+        if(str.size()>0 && str.back()==s[i]) // 제일 위의 원소와 비교해서 같으면 삭제
+            str.pop_back();
+        else
+            str.push_back(s[i]); // 다르면 원소 삽입
+    }
+    
+    if(str.empty())
+        return 1;
+    else
+        return 0;
+  
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
