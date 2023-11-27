@@ -1,0 +1,27 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/42842
+
+#include <string>
+#include <vector>
+
+using namespace std;
+
+vector<int> solution(int brown, int yellow) {
+    vector<int> answer;
+    int sum = brown + yellow;
+    
+    for(int h=3;;h++)
+    {
+        if(sum%h==0) // sum = height * weight
+        {
+            int w = sum / h;
+            if((h-2)*(w-2)==yellow) // brown 이 yellow 의 상하(h-2), 좌우(w-2)를 둘러싸고 있기 때문에
+            {
+                answer.push_back(w);
+                answer.push_back(h);
+                break;
+            }
+        }
+    }
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
