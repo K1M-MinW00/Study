@@ -1,0 +1,37 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/12985#
+
+#include <iostream>
+using namespace std;
+
+int solution(int n, int a, int b)
+{
+    int answer = 1;
+    int temp;
+
+    if(a<b) // a > b 로 맞추기 위해서
+    {
+        temp = b;
+        b = a;
+        a = temp;
+    }
+    
+    while(1)
+    {
+        if((b+1==a && a%2==0)) // 차가 1이고, 큰 숫자가 짝수, 작은 숫자가 홀수일 때, 마주치게 됨
+            break;
+
+        if(a%2==0)
+            a/=2;
+        else
+            a = (a+1)/2;
+        
+        if(b%2==0)
+            b/=2;
+        else
+            b = (b+1)/2;
+        
+        answer++;
+    }
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
