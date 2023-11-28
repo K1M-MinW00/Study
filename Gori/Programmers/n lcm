@@ -1,0 +1,44 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/12953
+
+#include <string>
+#include <vector>
+#include <iostream>
+using namespace std;
+
+int gcd(int a,int b)
+{
+    if(b>a)
+    {
+        int temp = b;
+        b = a;
+        a = temp;
+    }
+    
+    if(b==0)
+        return a;
+    else
+        return gcd(b,a%b);
+}
+
+int lcm(int a,int b)
+{
+    return a*b/gcd(a,b);
+}
+
+int solution(vector<int> arr) {
+    int answer;
+    
+    while(arr.size()!=1)
+    {
+        int a = arr.back();
+        arr.pop_back();
+        int b = arr.back();
+        arr.pop_back();
+        
+        arr.push_back(lcm(a,b)); // a와 b의 최소 공배수를 arr 에 삽입
+    }
+    
+    answer = arr[0];
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
