@@ -1,0 +1,20 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/12914
+
+#include <string>
+#include <vector>
+
+using namespace std;
+
+long long solution(int n) {
+    long long answer = 0;
+    
+    vector<long long> num(1,1);
+    num.push_back(1); // 1칸
+    
+    for(int i=1;i<n;i++)
+        num.push_back((num[i]+num[i-1])%1234567); // (i+1)칸 이동하는 방법 = i칸 이동하는 방법 + (i-1)칸 이동하는 방법
+    
+    answer = num.back();
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
