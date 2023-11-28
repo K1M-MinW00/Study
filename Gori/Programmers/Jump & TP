@@ -1,0 +1,23 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/12980 
+
+#include <iostream>
+using namespace std;
+
+int solution(int n)
+{
+    int ans = 0;
+    
+    while(n)
+    {
+        if(n%2==1) // 홀수일 때, -1
+        {
+            n--;
+            ans++;
+        }
+        else // 짝수일 때, 2로 나누기
+            n/=2;
+    }
+
+    return ans;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
