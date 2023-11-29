@@ -1,0 +1,26 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/131701
+
+#include <string>
+#include <vector>
+#include <map>
+using namespace std;
+
+int solution(vector<int> elements) {
+    int answer = 0;
+    map<int,int> m; // 중복 제외하고 합의 개수만 알면 되므로 map 사용
+    
+    for(int i=1;i<=elements.size();i++) // 원소의 개수
+    {
+        for(int j=0;j<elements.size();j++) // 시작 원소
+        {
+            int sum = 0;
+            for(int k=j;k<j+i;k++) // 시작 원소 ~ 원소의 개수 만큼 더하기 (원형 수열이므로 % 연산)
+                sum +=elements[k%elements.size()];
+            
+            m[sum]++;
+        }
+    }
+    answer = m.size(); // 합의 개수
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
