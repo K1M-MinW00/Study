@@ -1,0 +1,36 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/42626
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <queue>
+using namespace std;
+
+int solution(vector<int> scoville, int K) {
+    int answer = 0;
+    
+    priority_queue<int, vector<int>, greater<int>> pq; // 오름차순 우선순위 큐
+    
+    for(int i=0;i<scoville.size();i++)
+        pq.push(scoville[i]);
+    
+    if(pq.top()>=K) // 처음부터 조건을 만족할 경우
+        return answer; 
+    
+    while(pq.top()<K && pq.size()>=2) // 제일 작은 값이 K 보다 작고, pq 의 크기가 2 이상이어야 함
+    {
+        answer++;
+        int first = pq.top();
+        pq.pop();
+        int next = pq.top();
+        pq.pop();
+        
+        int make = first + next*2;
+        pq.push(make);
+        
+        if(pq.top()>=K)
+            return answer;
+    }
+
+    return -1;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
