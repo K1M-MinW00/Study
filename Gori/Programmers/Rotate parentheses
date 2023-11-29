@@ -1,0 +1,29 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/76502
+
+#include <string>
+#include <vector>
+#include <stack>
+#include <iostream>
+using namespace std;
+
+int solution(string s) {
+    int answer = 0;
+
+
+    for(int i=0;i<s.length();i++) // 시작 원소
+    {
+        stack<char> st;
+        for(int j=i;j<i+s.length();j++) // 
+        {
+            if(s[j%s.length()]-st.top() == 2 || s[j%s.length()]-st.top()==1) // () 아스키코드 1 차이, {},() 아스키코드 2 차이
+                st.pop(); // [ ] 경우, 만나서 삭제
+            else
+                st.push(s[j%s.length()]); // ] [ 경우 , stack 삽입 
+        }
+        
+        if(st.empty()) // 모두 삭제 됐으면 성공
+            answer++;
+    }
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
