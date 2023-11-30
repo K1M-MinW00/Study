@@ -1,0 +1,31 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/42578
+
+#include <string>
+#include <vector>
+#include <map>
+
+using namespace std;
+
+int solution(vector<vector<string>> clothes) {
+    int answer = 0;
+    map<string,vector<string>> m; // 의상 종류 : 의상1, 의상2, ...
+    
+    for(int i=0;i<clothes.size();i++)
+    {
+        m[clothes[i][1]].push_back(clothes[i][0]); // second 가 vector<string> 이므로 push_back 을 통해 삽입
+    }
+    
+    int n=1; 
+    
+    for(auto e : m)
+    {
+        n *=(e.second.size()+1);
+    }
+    
+    answer = n-1;
+    return answer;
+    // 가능한 조합의 수 = (종류1 개수 + 1) * (종류2 개수 + 1) * ... *(종류i 개수 + 1) - 1
+    // 개수에 + 1 하는 이유 : 아무것도 고르지 않는 경우 포함
+    // 마지막에 - 1 하는 이유 : 모든 의상에서 하나도 고르지 않은 경우
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
