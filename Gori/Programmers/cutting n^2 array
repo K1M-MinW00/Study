@@ -1,0 +1,28 @@
+//문제 : https://school.programmers.co.kr/learn/courses/30/lessons/87390
+
+#include <string>
+#include <vector>
+
+using namespace std;
+
+vector<int> solution(int n, long long left, long long right) {
+    vector<int> answer;
+    
+    for(long long i=left;i<=right;i++)
+    {
+        long long m = i / n;
+        long long r = i % n;
+        
+        if(m>=r)
+        {
+            answer.push_back(m+1);
+        }
+        else
+        {
+            answer.push_back(r+1);
+        }
+            
+    }
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
