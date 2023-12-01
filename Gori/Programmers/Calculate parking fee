@@ -1,0 +1,47 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/92341
+
+#include <string>
+#include <vector>
+#include <map>
+#include <math.h>
+#include <iostream>
+
+using namespace std;
+
+vector<int> solution(vector<int> fees, vector<string> records) {
+    vector<int> answer;
+    
+    map<string,vector<int>> m; // (차량번호, 분)
+    
+    string num;
+    int hour,min;
+    for(int i=0;i<records.size();i++)
+    {
+        num = records[i].substr(6,4);
+        hour = (records[i][0]-'0')*10 + (records[i][1]-'0'); 
+        min = (records[i][3]-'0')*10 + (records[i][4]-'0');
+        
+        m[num].push_back(hour*60+min); // 분 계산
+    }
+    
+    for(auto e : m)
+    {
+        if(e.second.size()%2!=0) // 마지막에 출차하지 않은 경우
+            e.second.push_back(23*60+59);
+        
+        int time=0;
+        for(int i=0;i<e.second.size();i++)
+        {
+            if(i%2==0) // 입차 시간
+                time -=e.second[i];
+            else // 출차 시간
+                time +=e.second[i];
+        }
+        if(time<=fees[0]) // 기본 시간보다 적은 경우
+            answer.push_back(fees[1]);
+        else
+            answer.push_back(fees[1]+ceil(float(time-fees[0])/float(fees[2]))*fees[3]);
+    }
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
