@@ -1,0 +1,49 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/17680
+
+#include <string>
+#include <vector>
+#include <deque>
+using namespace std;
+
+int solution(int cacheSize, vector<string> cities) {
+    int answer = 0;
+    
+    for(int i=0;i<cities.size();i++)
+    {
+        for(int j=0;j<cities[i].size();j++)
+            cities[i][j] = toupper(cities[i][j]);
+    } // 모든 문자를 대문자로 변환
+    
+    deque<string> dq; // 앞뒤 양쪽에서 삽입과 삭제가 가능한 deque
+
+    for(int i=0;i<cities.size();i++)
+    {
+        auto iter = dq.begin();
+        for(iter = dq.begin();iter != dq.end();iter++)
+        {
+            if(*iter == cities[i]) // cache Hit
+            {   
+                answer+=1;
+                dq.erase(iter); // 해당 데이터를 삭제한 뒤,
+                dq.push_back(cities[i]); // 가장 최근에 사용했으므로 push_back
+                break;
+            }
+        }
+        if(iter==dq.end()) // cache Miss
+        {
+            answer +=5;
+            if(dq.size()==cacheSize) // cache 가 가득 찼을때
+            {
+                if(!dq.empty()) // deque 가 비어있을 때는 pop 할 수 없기 때문에
+                {dq.pop_front();
+                dq.push_back(cities[i]);
+                }
+            }
+            else // cache에 빈 공간이 있을 때
+                dq.push_back(cities[i]);
+        }
+    }
+            
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
