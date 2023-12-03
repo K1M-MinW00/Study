@@ -1,0 +1,67 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/64065
+
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+bool compare(vector<int> a, vector<int> b)
+{
+    return a.size() < b.size(); // 벡터 크기로 오름차순 정렬
+}
+
+vector<int> solution(string s) {
+    vector<int> answer;
+    
+    vector<vector<int>> num;
+    vector<int> temp;
+
+    string n = "";
+    int element;
+    bool newVector = false;
+
+    for(int i=1;i<s.length()-1;i++)
+    {
+        if(s[i]=='{') // 새로운 벡터 시작
+        {
+            newVector = true;
+        }
+        else if(newVector && (s[i] >= '0' && s[i] <= '9'))
+        {
+            n += s[i];
+        }
+        else if(newVector && s[i]== ',') // 벡터 원소 추가
+        {
+            element = stoi(n);
+            temp.push_back(element);
+            n = "";
+        }
+        else if(newVector && s[i] == '}') // 벡터 끝
+        {
+            element = stoi(n);
+            temp.push_back(element); // 마지막 원소 추가
+            num.push_back(temp);
+            n = "";
+            newVector = false;
+            temp.clear();
+        }
+    }
+    
+    sort(num.begin(),num.end(),compare); // 벡터 크키로 오름차순 정렬
+    
+    bool check[100001] = {false,};
+    
+    for(int i=0;i<num.size();i++)
+    {
+        for(int j=0;j<num[i].size();j++)
+        {
+            if(check[num[i][j]]==false) // 새로 추가된 원소 확인
+            {
+                check[num[i][j]]=true;
+                answer.push_back(num[i][j]);
+            }
+        }
+    }
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
