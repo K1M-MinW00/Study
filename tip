@@ -1,0 +1,5 @@
+// C++ 에서 시간 단축을 위한 코드
+ios :: sync_with_stdio(false);
+cin.tie(NULL);
+cout.tie(NULL);
+// C의 stdio 와 C++의 iostream 의 동기화 비활성화, C++ 독립 버퍼 사용으로 시간 단축.
