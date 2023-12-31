@@ -1,0 +1,55 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/1844
+
+#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+
+int m, n;
+int dir[4][2] = {{-1, 0}, {1, 0}, {0, 1}, {0, -1}}; // 방향
+bool visited[101][101];                             // 방문했는지 아닌지
+int dst[101][101];                                  // 최단 거리
+queue<pair<int, int>> q;
+
+int solution(vector<vector<int>> maps)
+{
+    int answer = 0;
+    m = maps.size();    // 행 개수
+    n = maps[0].size(); // 열 개수
+
+    visited[0][0] = true;
+    q.push({0, 0});
+    dst[0][0] = 1; // 출발
+
+    while (!q.empty())
+    {
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+
+        for (int i = 0; i < 4; i++)
+        {
+            int nx = x + dir[i][0];
+            int ny = y + dir[i][1];
+
+            if (nx < 0 || ny < 0 || nx >= m || ny >= n) // 범위 밖이면 Pass
+                continue;
+            if (visited[nx][ny]) // 방문했다면 Pass
+                continue;
+            if (maps[nx][ny] == 0) // 더 이상 진행할 수 없는 벽이면 Pass
+                continue;
+
+            visited[nx][ny] = true; // 방문
+            q.push({nx, ny});
+            dst[nx][ny] = dst[x][y] + 1;
+        }
+    }
+
+    if (dst[m - 1][n - 1] == 0)
+        answer = -1;
+    else
+        answer = dst[m - 1][n - 1];
+
+    return answer;
+}
+// 출처: 프로그래머스 코딩 테스트 연습, https://school.programmers.co.kr/learn/challenges
