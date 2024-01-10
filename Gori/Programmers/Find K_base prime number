@@ -1,0 +1,86 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/92335
+
+#include <string>
+#include <vector>
+#include <sstream>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+
+string to_k_nary(int n, int k) // n 을 k 진법으로 변환
+{
+    string num = "";
+
+    while (n)
+    {
+        int tmp = n % k;
+        string t = to_string(tmp);
+        num += t;
+        n /= k;
+    }
+    reverse(num.begin(), num.end());
+    return num;
+}
+
+bool isprime(long long n) // 소수 판별
+{
+    if (n == 0 || n == 1)
+        return false;
+
+    for (int i = 2; i <= sqrt(n); i++)
+        if (n % i == 0)
+            return false;
+
+    return true;
+}
+
+vector<string> split(string input) // 0 을 delimiter 로 input 쪼개기
+{
+    vector<string> result;
+
+    int i = 0;
+    string tmp = "";
+    while (i != input.size())
+    {
+        if (input[i] == '0')
+        {
+            if (tmp.size() == 0)
+            {
+                i++;
+                continue;
+            }
+            else
+            {
+                result.push_back(tmp);
+                tmp = "";
+            }
+        }
+        else // input[i] != '0'
+        {
+            tmp += input[i];
+        }
+        i++;
+    }
+    if (tmp.size() > 0)
+        result.push_back(tmp);
+
+    return result;
+}
+
+int solution(int n, int k)
+{
+    int answer = 0;
+
+    string num = to_k_nary(n, k);
+
+    vector<string> str = split(num);
+    for (int i = 0; i < str.size(); i++)
+    {
+        long long element = stoll(str[i]);
+
+        if (isprime(element))
+            answer++;
+    }
+
+    return answer;
+}
