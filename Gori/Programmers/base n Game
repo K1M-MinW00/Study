@@ -1,0 +1,61 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/17687
+
+#include <string>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+string base_n(int num, int n)
+{
+    string str = "";
+    if (num == 0)
+        return "0";
+    while (num)
+    {
+        int tmp = num % n;
+        num /= n;
+        if (tmp < 10)
+            str += to_string(tmp);
+        else if (tmp == 10)
+            str += 'A';
+        else if (tmp == 11)
+            str += 'B';
+        else if (tmp == 12)
+            str += 'C';
+        else if (tmp == 13)
+            str += 'D';
+        else if (tmp == 14)
+            str += 'E';
+        else if (tmp == 15)
+            str += 'F';
+    }
+    reverse(str.begin(), str.end());
+    return str;
+}
+
+string solution(int n, int t, int m, int p)
+{
+    string answer = "";
+
+    int num = 0, idx = 0, cnt = 0;
+    if (m == p)
+        p = 0;
+    while (answer.size() <= t)
+    {
+        string x = base_n(num, n);
+
+        for (int i = 0; i < x.size(); i++)
+        {
+            idx++;
+            if (idx % m == p)
+            {
+                answer += x[i];
+            }
+        }
+        num++;
+    }
+    answer = answer.substr(0, t);
+
+    return answer;
+}
