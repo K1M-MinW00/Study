@@ -1,0 +1,44 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/42583
+
+#include <string>
+#include <vector>
+#include <queue>
+#include <iostream>
+
+using namespace std;
+
+int solution(int bridge_length, int weight, vector<int> truck_weights)
+{
+    queue<int> q;
+    pair<int, int> p[10001]; // <시간,무게>
+
+    int i = 0, sec = 0, sum = 0; // 인덱스 , 현재 시간, 다리 위 트럭들의 무게
+
+    do
+    {
+        sec++;                                                       // 현재 시간
+        if (!q.empty() && p[q.front()].first + bridge_length <= sec) // q 가 비어있지 않고, 트럭의 진입 시간 + 다리의 길이 <= 현재 시간
+        {
+            // 맨 앞의 트럭이 다리를 통과.
+            sum -= p[q.front()].second; // 통과한 트럭의 무게 제거
+            q.pop();
+        }
+
+        if (i < truck_weights.size() && sum + truck_weights[i] <= weight) // 대기중인 트럭이 있고, 트럭을 하나 올려도 제한 무게 이하일 때
+        {
+            sum += truck_weights[i]; // 트럭 하나 추가
+            q.push(i);
+            p[i].first = sec;               // 트럭이 진입한 시간
+            p[i].second = truck_weights[i]; // 트럭의 무게
+            i++;                            // 다음 들어갈 트럭의 인덱스
+        }
+    } while (!q.empty());
+
+    return sec;
+}
+
+int main()
+{
+    vector<int> a = {7, 4, 5, 6};
+    cout << solution(2, 10, a);
+}
