@@ -1,0 +1,133 @@
+// 문제 : https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV141J8KAIcCFAYD
+
+#include <iostream>
+#include <stack>
+using namespace std;
+
+stack<float> st;
+
+struct Node
+{
+    float num;
+    char op;
+    Node *left, *right;
+};
+constexpr size_t MAX = 9999;
+
+int node_cnt = 0;
+Node node_pool[MAX];
+
+Node *new_Pnode(char op)
+{
+    node_pool[node_cnt].num = 0;
+    node_pool[node_cnt].op = op;
+    node_pool[node_cnt].left = nullptr;
+    node_pool[node_cnt].right = nullptr;
+
+    return &node_pool[node_cnt++];
+}
+
+Node *new_Cnode(float num)
+{
+    node_pool[node_cnt].num = num;
+    node_pool[node_cnt].op = ' ';
+    node_pool[node_cnt].left = nullptr;
+    node_pool[node_cnt].right = nullptr;
+
+    return &node_pool[node_cnt++];
+}
+
+void traversal(Node *node) // stack 을 통해 사칙 연산
+{
+    if (node == nullptr)
+        return;
+    traversal(node->left);
+    traversal(node->right);
+
+    if (node->op == '+')
+    {
+        float b = st.top();
+        st.pop();
+        float a = st.top();
+        st.pop();
+
+        st.push(a + b);
+    }
+    else if (node->op == '-')
+    {
+        float b = st.top();
+        st.pop();
+        float a = st.top();
+        st.pop();
+
+        st.push(a - b);
+    }
+    else if (node->op == '*')
+    {
+        float b = st.top();
+        st.pop();
+        float a = st.top();
+        st.pop();
+
+        st.push(a * b);
+    }
+    else if (node->op == '/')
+    {
+        float b = st.top();
+        st.pop();
+        float a = st.top();
+        st.pop();
+
+        st.push(a / b);
+    }
+    else // 숫자
+    {
+        st.push(node->num);
+    }
+}
+
+int main(int argc, char **argv)
+{
+    int test_case;
+
+    for (test_case = 1; test_case <= 10; ++test_case)
+    {
+        int N;
+        cin >> N; // 정점 개수
+
+        int idx, l, r;
+        for (int i = 1; i <= N; i++) // 이진 트리
+        {
+            int num = 0;
+            char data[10]; // index 다음에 오는 문자가 연산자인지, 피연산자인지 확인하기 위해
+            cin >> idx >> data;
+            if (data[0] >= '0' && data[0] <= '9') // 피연산자일 때 , Child_node 생성
+            {
+                for (int j = 0; data[j]; j++) // char 형 배열을 int 로
+                {
+                    num *= 10;
+                    num += data[j] - '0';
+                }
+
+                Node *node = new_Cnode(num);
+            }
+            else // 연산자일 때 , Parent_node 생성
+            {
+                cin >> l >> r;
+                char op = data[0];
+                Node *node = new_Pnode(op);
+                node->left = &node_pool[l - 1];
+                node->right = &node_pool[r - 1];
+            }
+        }
+
+        traversal(&node_pool[0]);
+        int result = st.top();
+        st.pop();
+
+        cout << '#' << test_case << " " << result << endl;
+
+        node_cnt = 0;
+    }
+    return 0;
+}
