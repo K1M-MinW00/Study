@@ -1,0 +1,58 @@
+/ 문제 : https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AWngfZVa9XwDFAQU
+
+#include <iostream>
+#include <vector>
+#include <set>
+
+#define MAX 1001
+using namespace std;
+
+static vector<int> parent(MAX);
+int group;
+
+int find(int a)
+{
+    if (a == parent[a])
+        return a;
+    else
+        return parent[a] = find(parent[a]);
+}
+
+void Union(int a, int b)
+{
+    a = find(a);
+    b = find(b);
+    if (a != b)
+    {
+        parent[b] = a;
+        group--; // 묶일 때 마다 group 1씩 감소
+    }
+}
+
+int main(int argc, char **argv)
+{
+    int test_case;
+    int T;
+    cin >> T;
+    for (test_case = 1; test_case <= T; ++test_case)
+    {
+        int N, M, a, b;
+        cin >> N >> M;
+
+        group = N;
+
+        for (int i = 1; i <= N; i++) // initialize
+        {
+            parent[i] = i;
+        }
+
+        for (int i = 0; i < M; i++)
+        {
+            cin >> a >> b;
+            Union(a, b);
+        }
+
+        cout << '#' << test_case << ' ' << group << endl;
+    }
+    return 0;
+}
