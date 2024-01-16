@@ -1,0 +1,78 @@
+// 문제 : https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV140YnqAIECFAYD
+
+#include <iostream>
+
+using namespace std;
+
+struct Node
+{
+    char key;
+    Node *left, *right;
+};
+constexpr size_t MAX = 999;
+
+int node_cnt = 0;
+Node node_pool[MAX];
+
+Node *new_node(char key)
+{
+    node_pool[node_cnt].key = key;
+    node_pool[node_cnt].left = nullptr;
+    node_pool[node_cnt].right = nullptr;
+
+    return &node_pool[node_cnt++];
+}
+
+void traversal(Node *node) // in-order 중위순회
+{
+    if (node == nullptr)
+        return;
+    traversal(node->left);
+    cout << node->key;
+    traversal(node->right);
+}
+
+int main(int argc, char **argv)
+{
+    int test_case;
+
+    for (test_case = 1; test_case <= 10; ++test_case)
+    {
+        int N;
+        cin >> N; // 총 정점의 수
+
+        int idx, l, r;
+        char key;
+        for (int i = 1; i <= N; i++) // 완전 이진 트리 입력
+        {
+            if (i <= N / 2) // 완전 이진 트리 이므로 리프 노드가 아닌 노드들은 자식 노드가 하나 이상 있어야 함
+            {
+                if (i == N / 2 && N % 2 == 0) // N 이 짝수일 때, N/2 번째 노드는 왼쪽 자식 노드만을 가짐
+                {
+                    cin >> idx >> key >> l; // index, key, 왼쪽 자식 노드 입력 받기
+
+                    Node *node = new_node(key);
+                    node->left = &node_pool[l - 1];
+                    node->right = nullptr;
+                }
+                else 
+                {
+                    cin >> idx >> key >> l >> r; // index, key, 왼쪽, 오른쪽 자식 노드 입력 받기
+                    Node *node = new_node(key);
+                    node->left = &node_pool[l - 1];
+                    node->right = &node_pool[r - 1];
+                }
+            }
+            else // 리프 노드는 자식 노드를 입력 받지 않음
+            {
+                cin >> idx >> key; // index, key 입력 받기
+                Node *node = new_node(key);
+            }
+        }
+        cout << '#' << test_case << " ";
+        traversal(&node_pool[0]);
+        cout << endl;
+        node_cnt = 0;
+    }
+    return 0;
+}
