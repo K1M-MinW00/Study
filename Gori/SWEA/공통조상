@@ -1,0 +1,101 @@
+// 문제 : https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV15PTkqAPYCFAYD
+
+#include <iostream>
+
+using namespace std;
+
+struct Node
+{
+    int num;
+    Node *left;
+    Node *right;
+    Node *parent;
+};
+constexpr size_t MAX = 99999;
+
+int cnt = 0;
+Node *p_find;
+
+void find_parent(Node *cur, int c)
+{
+    if (cur == nullptr)
+        return;
+
+    find_parent(cur->left, c);
+    if (cur->num == c)
+        p_find = cur;
+    find_parent(cur->right, c);
+}
+
+void traversal(Node *node)
+{
+    if (node == nullptr)
+        return;
+    traversal(node->left);
+    cnt++;
+    traversal(node->right);
+}
+
+int main(int argc, char **argv)
+{
+    int test_case;
+    int T;
+    cin >> T;
+    for (test_case = 1; test_case <= T; ++test_case)
+    {
+        int V, E, a, b;
+        cin >> V >> E >> a >> b; // 정점, 간선, 두 개의 정점 번호
+
+        Node node_pool[MAX] = { 0, };
+
+        int p, c; // 부모 노드, 자식 노드
+        for (int i = 1; i <= E; i++)
+        {
+            cin >> p >> c;
+            if (node_pool[p - 1].left == nullptr) // 왼쪽 자식 노드부터 채우기
+            {
+                node_pool[p - 1].num = p;
+                node_pool[c - 1].num = c;
+                node_pool[p - 1].left = &node_pool[c - 1];
+                node_pool[c - 1].parent = &node_pool[p - 1];
+            }
+            else if (node_pool[p - 1].right == nullptr) // 왼쪽 자식 노드가 차있다면 오른쪽 자식 노드 채우기
+            {
+                node_pool[c - 1].num = c;
+                node_pool[p - 1].right = &node_pool[c - 1];
+                node_pool[c - 1].parent = &node_pool[p - 1];
+            }
+        }
+
+        find_parent(&node_pool[0], a); // 첫번째 정점의 부모 노드
+        Node *ptr1 = p_find;
+        find_parent(&node_pool[0], b); // 두번째 정점의 부모 노드
+        Node *ptr2 = p_find;
+
+        bool same_parent = false;
+
+        while (1)
+        {
+            Node *temp = ptr2;
+            while (1)
+            {
+                if (ptr1->parent == temp->parent) // 공통 조상 발견
+                {
+                    same_parent = true;
+                    break;
+                }
+                if (temp->parent == nullptr)
+                    break;
+                temp = temp->parent;
+            }
+            if (ptr1->parent == nullptr || same_parent == true)
+                break;
+            ptr1 = ptr1->parent;
+        }
+
+        traversal(ptr1->parent); // 서브 트리 크기
+        cout << '#' << test_case << ' ' << ptr1->parent->num << ' ' << cnt << endl;
+        cnt = 0;
+    }
+    return 0;
+}
