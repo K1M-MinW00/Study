@@ -1,0 +1,63 @@
+// 문제 : https://swexpertacademy.com/main/code/codeBattle/problemDetail.do?contestProbId=AX5MBiQqAbQDFASv&categoryId=AYzyEMha298DFASg&categoryType=BATTLE&battleMainPageIndex=1
+
+#include <iostream>
+#include <list>
+
+using namespace std;
+
+int main(int argc, char **argv)
+{
+    int test_case;
+    int T;
+    cin >> T;
+
+    for (test_case = 1; test_case <= T; ++test_case)
+    {
+
+        int N, M, L;
+
+        scanf("%d %d %d", &N, &M, &L);
+
+        list<int> A;
+
+        for (int i = 0; i < N; i++) // 수열의 초기 상태
+        {
+            int num;
+            scanf("%d", &num);
+            A.push_back(num);
+        }
+
+        char op;
+        int x, y;
+        for (int i = 0; i < M; i++) // 추가
+        {
+            cin >> op >> x;
+            auto it = A.begin();
+            advance(it, x);
+            if (op == 'I') // x번 인덱스 앞에 y 추가하고, 한 칸 씩 뒤로 이동
+            {
+                cin >> y;
+                A.insert(it, y);
+            }
+            else if (op == 'D') // x번 인덱스 삭제
+            {
+                A.erase(it);
+            }
+            else if (op == 'C') // x번 인덱스를 y로 바꿈
+            {
+                cin >> y;
+                *it = y;
+            }
+        }
+        cout << "#" << test_case << ' ';
+        if (A.size() < L)
+            cout << -1 << endl;
+        else
+        {
+            auto it = A.begin();
+            advance(it, L);
+            cout << *it << endl;
+        }
+    }
+    return 0; // 정상종료시 반드시 0을 리턴해야합니다.
+}
