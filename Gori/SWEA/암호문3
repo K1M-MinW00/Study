@@ -1,0 +1,74 @@
+// 문제 : https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV14zIwqAHwCFAYD
+
+#include <list>
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, char **argv)
+{
+    int test_case;
+    int T = 10;
+
+    for (test_case = 1; test_case <= T; ++test_case)
+    {
+        int N;
+        scanf("%d", &N); // 암호문 개수
+
+        list<int> A;
+
+        for (int i = 0; i < N; i++) // 원본 암호문 뭉치
+        {
+            int num;
+            scanf("%d", &num);
+            A.push_back(num);
+        }
+
+        scanf("%d", &N); // 명령어 개수
+
+        char op;
+        int x, y, s;
+
+        for (int i = 0; i < N; i++)
+        {
+            cin >> op >> x;
+            if (op == 'I') // 삽입 , x번째 암호문 바로 다음에 y 개의 암호문 삽입
+            {
+                auto it = A.begin();
+                advance(it, x);
+                scanf("%d", &y);
+                for (int j = 0; j < y; j++)
+                {
+                    scanf("%d", &s);
+                    A.insert(it, s);
+                }
+            }
+            else if (op == 'D') // 삭제 , x번째 암호문 바로 다음부터 y 개의 암호문 삭제
+            {
+
+                auto it = A.begin();
+                advance(it, x);
+                scanf("%d", &y);
+                for (int j = 0; j < y; j++)
+                    it = A.erase(it);
+            }
+            else if (op == 'A') // 추가 , 맨 뒤에 x 개의 암호문 추가
+            {
+                for (int j = 0; j < x; j++)
+                {
+                    scanf("%d", &s);
+                    A.push_back(s);
+                }
+            }
+        }
+        cout << "#" << test_case << ' ';
+        int idx = 0;
+        for (auto it : A)
+        {
+            if (idx == 10)
+                break;
+            cout << it << ' ';
+            idx++;
+        }
+    }
+    return 0;
