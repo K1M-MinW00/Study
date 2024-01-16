@@ -1,0 +1,44 @@
+// 문제 : https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV141176AIwCFAYD
+
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, char **argv)
+{
+    int test_case;
+
+    for (test_case = 1; test_case <= 10; ++test_case)
+    {
+        int N;
+        cin >> N; // 정점의 수
+
+        int idx, l, r, answer = 1;
+        char key;
+        for (int i = 1; i <= N; i++) // 완전 이진 트리 입력 받기
+        {
+            cin >> idx >> key;
+            if (i <= N / 2) // key 로 연산자를 입력 받아야 함
+            {
+                if (i == N / 2 && N % 2 == 0)
+                {
+                    cin >> l;
+                }
+                else
+                {
+                    cin >> l >> r;
+                }
+
+                if (key >= '0' && key <= '9') // 연산자가 아닌 피연산자를 입력 받으면 부적절한 식
+                    answer = 0;
+            }
+            else // key 로 피연산자를 입력 받아야 함
+            {
+                if (!(key >= '0' && key <= '9')) // 피연산자가 아닌 연산자를 입력 받으면 부적절한 식
+                    answer = 0;
+            }
+        }
+        cout << '#' << test_case << " " << answer << endl;
+    }
+    return 0;
+}
