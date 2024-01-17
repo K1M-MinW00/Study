@@ -1,0 +1,67 @@
+// 문제 : https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV15StKqAQkCFAYD
+
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+long long dist(pair<long long, long long> a, pair<long long, long long> b)
+{
+    long long x = (a.first - b.first) * (a.first - b.first);
+    long long y = (a.second - b.second) * (a.second - b.second);
+    return x + y;
+}
+
+int main(int argc, char **argv)
+{
+    int test_case;
+    int T;
+
+    cin >> T;
+
+    for (test_case = 1; test_case <= T; ++test_case)
+    {
+        int N; // 섬의 개수
+        cin >> N;
+        vector<pair<long long, long long>> city(N);
+
+        for (int i = 0; i < N; i++)
+            cin >> city[i].first;
+
+        for (int i = 0; i < N; i++)
+            cin >> city[i].second;
+
+        double E;
+        cin >> E;
+
+        vector<long long> D(N, 9223372036854775807LL);
+        vector<bool> visited(N, false);
+
+        int node = 0;
+        visited[node] = true; // 첫번째 섬 방문
+        long long sum = 0;
+
+        for (int r = 1; r < N; r++) // N-1 번 더 방문해야 함
+        {
+            for (int i = 0; i < N; i++)
+            {
+                if (i != node)                                   // i == node 일 때는 dist() = 0
+                    D[i] = min(D[i], dist(city[node], city[i])); // 이전 D[i] 와 현재 node 와 i 사이의 거리 중 최소값 D[i] 에 업데이트
+            }
+
+            node = -1;
+            for (int i = 0; i < N; i++)
+            {
+                if (visited[i])
+                    continue;
+                if (node == -1 || D[node] > D[i]) // 방문하지 않은 섬 중 가장 가까운 D 찾기
+                    node = i;
+            }
+            sum += D[node];
+            visited[node] = true; // node 번째 섬 방문
+        }
+        long long ans = round(sum * E); // 소수점 첫번째 자리에서 반올림
+        cout << '#' << test_case << ' ' << ans << endl;
+    }
+    return 0;
+}
