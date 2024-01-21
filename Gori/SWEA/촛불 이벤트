@@ -1,0 +1,48 @@
+// 문제 : https://swexpertacademy.com/main/code/codeBattle/problemDetail.do?contestProbId=AXGBKzuaPOoDFAXR&categoryId=AYzyEMha298DFASg&categoryType=BATTLE&battleMainPageIndex=1
+
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    int T;
+    scanf("%d",&T);
+
+    for(register int test_case = 1;test_case <=T;++test_case)
+    {
+        long long N,answer = -1;
+        scanf("%lld",&N);
+
+
+        // 수학적 접근, k*(k+1)/2 = n 이 되는 k 를 찾으면 됨 -> k^2+k = 2*n -> 대략 k = sqrt (2*n) 와 유사 
+        long long left = 1;
+        long long right = sqrt(2*N);
+        long long mid,cal;
+        while(left <= right)
+        {
+            
+            mid = left + ((right - left)/2);
+            cal = mid * (mid+1) / 2;
+
+            if(cal == N)
+            {
+                answer = mid;
+                break;
+            }
+            else if(cal < N)
+            {
+                left = mid + 1;
+            }
+            else // cal > N
+            {
+                right = mid - 1;
+            }
+        }
+      
+        printf("#%d %lld\n",test_case,answer);
+
+    }
+}
