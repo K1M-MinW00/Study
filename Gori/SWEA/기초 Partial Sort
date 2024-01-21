@@ -1,0 +1,148 @@
+// 문제 : https://swexpertacademy.com/main/code/codeBattle/problemDetail.do?contestProbId=AXsEXxxqe7sDFARX&categoryId=AYzyEMha298DFASg&categoryType=BATTLE&battleMainPageIndex=1
+
+//user.cpp
+
+struct element // User 에 대한 정보
+{
+    int uID;
+    int height;
+    bool operator>(const element &e) const // height 에 대해 내림차순, uID 에 대해 오름차순
+    {
+        if (height == e.height)
+            return uID < e.uID;
+        else
+            return height > e.height;
+    }
+};
+
+element heap[11]; // 상위 10명만 유지하면 되기 때문
+int idx = 0;
+int temp_idx = 0;
+
+void swap(element &a, element &b)
+{
+    element temp = a;
+    a = b;
+    b = temp;
+}
+void init() // heap[] 초기화
+{
+    idx = 0;
+    for (int i = 0; i < 11; i++)
+    {
+        heap[i].uID = 0;
+        heap[i].height = 0;
+    }
+}
+
+void addUser(int uID, int height)
+{
+    element x;
+    x.uID = uID;
+    x.height = height;
+
+    if (idx < 10) // 10명 미만이라면, push 하면 됨
+    {
+        heap[++idx] = x;
+
+        int child = idx;
+        int parent = child / 2;
+
+        while (parent != 0 && heap[child] > heap[parent])
+        {
+            swap(heap[child], heap[parent]);
+            child = child / 2;
+            parent = child / 2;
+        }
+    }
+
+    else // 상위 10개 중 제일 작은 값 하나를 빼고 넣어야 함
+    {
+        int min = 2147483647; // heap 중 가장 작은 height 값을 저장할 변수
+        int min_idx = 0;      // heap 중 가장 작은 height 를 가지는 인덱스
+
+        for (int i = 1; i <= idx; i++)
+        {
+            if (min >= heap[i].height) // height 클수록, 우선 순위 높음
+            {
+                if (min == heap[i].height && heap[min_idx].uID > heap[i].uID) // height 같으면, uID 작을수록, 우선 순위 높음
+                    continue;
+                else // height 가 크거나, height 같을 때 (uID가 작으면) heap 에 입력
+                {
+                    min = heap[i].height;
+                    min_idx = i;
+                }
+            }
+        }
+        if (x.height <= min) // 가장 작은 값보다 작을 때 or 가장 작은 값과 같지만 x.uID 가 더 크기 때문에 PASS
+            return;
+        else
+        {
+            heap[min_idx] = x; // 가장 작은 값에 x 대입
+
+            /* 다시 MaxHeap 구조 만들어주기 위한 코드였으나, 가장 작은 값 위치에 대입했으므로, MaxHeap 구조가 유지되는 상황으로 아래 코드가 필요 없음
+            int child = min_idx;
+            int parent = child / 2;
+
+            while (parent != 0 && heap[child] > heap[parent])
+            {
+                swap(heap[child], heap[parent]);
+                child = child / 2;
+                parent = child / 2;
+            }
+          */
+        }
+    }
+}
+
+int pop(element heap[]) // top + pop , top 의 uID 출력하면서 루트 노드 삭제하기
+{
+    // top()
+    int top = heap[1].uID;
+    // pop()
+    swap(heap[1], heap[temp_idx]);
+    temp_idx--;
+
+    int parent = 1;
+    int large = parent;
+    int left = parent * 2;
+    int right = parent * 2 + 1;
+
+    while (1)
+    {
+        if (left <= temp_idx && heap[left] > heap[large])
+            large = left;
+        if (right <= temp_idx && heap[right] > heap[large])
+            large = right;
+        if (large == parent)
+            break;
+        else
+        {
+            swap(heap[parent], heap[large]);
+            parent = large;
+            left = parent * 2;
+            right = parent * 2 + 1;
+        }
+    }
+
+    return top;
+}
+
+int getTop10(int result[10])
+{
+    int cnt = idx;
+    temp_idx = idx;
+    element temp_heap[11]; // 임시로 heap 에 대한 정보를 저장해둘 temp_heap
+    for(int i=1;i<=cnt;i++)
+        temp_heap[i] = heap[i];
+    
+    
+    for (int i = 0; i < cnt; i++) // 상위 10개에 대한 정보
+    {
+        int top = pop(temp_heap);
+        // cout << top << ' ';
+        result[i] = top;
+    }
+
+    return cnt;
+}
