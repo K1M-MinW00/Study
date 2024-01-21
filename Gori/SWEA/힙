@@ -1,0 +1,48 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+using namespace std;
+
+int main()
+{
+    int T;
+    cin >> T;
+
+    for (int test_case = 1; test_case <= T; test_case++)
+    {
+        priority_queue<long long> pq; // MaxHeap
+        // MinHeap : priority_queue<long long, vector<long long>, greater<long long>> pq
+
+        int N;
+        cin >> N;
+        vector<long long> A;
+        for (int i = 0; i < N; i++)
+        {
+            int op;
+            cin >> op;
+
+            if (op == 1)
+            {
+                int num;
+                cin >> num;
+                pq.push(num);
+            }
+            else if (op == 2)
+            {
+                if (pq.empty())
+                    A.push_back(-1);
+                else
+                {
+                    long long top = pq.top();
+                    A.push_back(top);
+                    pq.pop();
+                }
+            }
+        }
+        cout << '#' << test_case << ' ';
+        for(int i=0;i<A.size();i++)
+            cout << A[i] << ' ';
+        cout << endl;
+    }
+    return 0;
+}
