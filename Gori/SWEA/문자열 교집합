@@ -1,0 +1,35 @@
+// 문제 : https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV-Un3G64SUDFAXr
+
+#include <iostream>
+#include <string>
+#include <unordered_set>
+
+using namespace std;
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    int T;
+    cin >> T;
+
+    for (int test_case = 1; test_case <= T; ++test_case)
+    {
+        int N, M;
+        cin >> N >> M;
+        int size = N + M; // 각각의 집합 원소 개수
+        unordered_set<string> us; // 합집합
+        for (int i = 1; i <= size; i++)
+        {
+            string temp;
+            cin >> temp;
+
+            us.insert(temp);
+        }
+
+        int size2 = us.size();
+
+        cout << '#' << test_case << ' ' << size - size2 << endl; // 차이는 교집합 크기
+    }
+}
