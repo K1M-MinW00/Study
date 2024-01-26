@@ -1,0 +1,43 @@
+// 문제 : https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV18KWf6ItECFAZN
+
+#include <iostream>
+#include <vector>
+#include <unordered_set>
+#include <algorithm>
+using namespace std;
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    int T;
+    cin >> T;
+
+    for (register int test_case = 1; test_case <= T; ++test_case)
+    {
+        int K;
+        string str;
+        cin >> K >> str;
+
+        unordered_set<string> A;
+        for (int i = 0; i < str.length(); ++i)
+        {
+            for(int j=1;j<=str.length();++j)
+            {
+                A.insert(str.substr(i,j));
+            }
+        }
+        vector<string> Sorted(A.begin(),A.end());
+        sort(Sorted.begin(), Sorted.end());
+
+        
+        if(K-1 >= Sorted.size())
+            cout << '#' << test_case << ' ' << "none" << '\n';
+        
+        else
+           cout << '#' << test_case << ' ' << Sorted[K-1] << '\n';
+    }
+    return 0;
+}
