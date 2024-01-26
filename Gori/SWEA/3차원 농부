@@ -1,0 +1,68 @@
+// 문제 : https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AW45TzHae8UDFAQ7
+
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+vector<int> cow;
+void bin(int e, int &min_d, int &cnt)
+{
+    int left = 0;
+    int right = cow.size() - 1;
+
+    while (left <= right)
+    {
+        int mid = left + ((right - left) / 2);
+        int temp = abs(e - cow[mid]);
+
+        if (temp < min_d) // 새로운 최소값 발견
+        {
+            min_d = temp;
+            cnt = 1; // 초기화
+        }
+        else if (temp == min_d) // 기존의 최소값이 존재
+            cnt++;
+
+        if (e < cow[mid])
+            right = mid - 1;
+        else if (e > cow[mid])
+            left = mid + 1;
+        else // e == cow[mid], min_d = 0 -> 최소값
+        {
+            break;
+        }
+    }
+}
+int main()
+{
+    ios::sync_with_stdio(NULL);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    int T;
+    scanf("%d", &T);
+
+    for (register int test_case = 1; test_case <= T; ++test_case)
+    {
+        int N, M, c1, c2;
+        scanf("%d %d %d %d", &N, &M, &c1, &c2);
+
+        int min_d = 2147483647;
+        int temp, cnt = 0;
+        cow.resize(N);
+        for (register int i = 0; i < N; ++i)
+            scanf("%d", &cow[i]);
+
+        sort(cow.begin(), cow.end());
+
+        for (register int i = 0; i < M; ++i)
+        {
+            scanf("%d", &temp);
+            bin(temp, min_d, cnt);
+        }
+        printf("#%d %d %d\n", test_case, min_d + abs(c1 - c2), cnt);
+        cow.resize(0);
+    }
+    return 0;
+}
