@@ -1,4 +1,4 @@
-// 문제 : https://www.acmicpc.net/submit/1197
+// 문제 : https://www.acmicpc.net/problem/1197
 
 #include <iostream>
 #include <queue>
