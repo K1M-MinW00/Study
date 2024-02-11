@@ -1,0 +1,40 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/49993
+
+#include <string>
+#include <vector>
+
+using namespace std;
+
+int solution(string skill, vector<string> skill_trees)
+{
+    int answer = 0;
+
+    vector<bool> alpha(26, false);
+
+    for (int i = 0; i < skill.length(); ++i)
+        alpha[skill[i] - '0'] = true; // skill 에 존재하는 알파벳 확인 용도
+
+    for (int i = 0; i < skill_trees.size(); ++i)
+    {
+        bool check = true;
+        int idx = 0;
+        for (int j = 0; j < skill_trees[i].length(); ++j)
+        {
+            if (alpha[skill_trees[i][j] - '0'] == false) // skill 에 존재하지 않는 알파벳일 때는 통과
+                continue;
+
+            if (skill[idx] != skill_trees[i][j]) // 기초 스킬보다 상위 스킬을 먼저 배우면 오류
+            {
+                check = false;
+                break;
+            }
+            else
+            {
+                ++idx;
+            }
+        }
+        if (check)
+            ++answer;
+    }
+    return answer;
+}
