@@ -1,0 +1,52 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/42888
+
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <sstream>
+
+using namespace std;
+
+vector<string> solution(vector<string> record)
+{
+	vector<string> answer;
+	vector<pair<int, string>> op; // 0 : Enter , 1 : Leave
+
+	unordered_map<string, string> um; // uid - nickname
+
+	for (int i = 0; i < record.size(); ++i)
+	{
+		string str = record[i];
+		stringstream ss(str); // 공백을 기준으로 문자열 구분하기
+
+		string option, uid, name;
+		ss >> option >> uid >> name;
+
+		if (option == "Enter")
+		{
+			op.push_back({0, uid});
+			um[uid] = name;
+		}
+
+		else if (option == "Leave")
+			op.push_back({1, uid});
+		
+		else
+			um[uid] = name;
+	}
+
+	for (int i = 0; i < op.size(); ++i)
+	{
+    string name = um[op[i].second];
+		
+    if (op[i].first == 0)
+			string r = name + "님이 들어왔습니다.";
+			
+		else
+			string r = name + "님이 나갔습니다.";
+
+		answer.push_back(r);
+	}
+
+	return answer;
+}
