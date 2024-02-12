@@ -1,0 +1,61 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/118667
+
+#include <string>
+#include <vector>
+#include <queue>
+using namespace std;
+
+int solution(vector<int> queue1, vector<int> queue2)
+{
+	int answer = -1;
+
+	long long sum1 = 0, sum2 = 0;
+
+	queue<int> q1, q2;
+
+	for (int i = 0; i < queue1.size(); ++i)
+	{
+		sum1 += queue1[i];
+		q1.push(queue1[i]);
+	}
+
+	for (int i = 0; i < queue2.size(); ++i)
+	{
+		sum2 += queue2[i];
+		q2.push(queue2[i]);
+	}
+
+	long long target = sum1 + sum2;
+
+	if (target % 2 != 0) // 두 합이 홀수이면 반으로 나눌 수 없음
+		return -1;
+
+	target /= 2;
+
+	int max_cnt = (queue1.size() + queue2.size()) * 2; // 최대 이동 횟수
+	int cnt = 0; // 현재 이동 횟수
+
+	while (cnt < max_cnt)
+	{
+		if (sum1 == target)
+			return cnt;
+
+		if (sum1 < target)
+		{
+			int t = q2.front();
+			q2.pop();
+			q1.push(t);
+			sum1 += t;
+		}
+		else // sum1 > target
+		{
+			int t = q1.front();
+			q1.pop();
+			q2.push(t);
+			sum1 -= t;
+		}
+		++cnt;
+	}
+
+	return -1;
+}
