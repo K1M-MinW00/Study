@@ -1,0 +1,50 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/133499
+
+#include <string>
+#include <vector>
+
+using namespace std;
+
+int solution(vector<string> babbling)
+{
+    int answer = 0;
+
+    for (int i = 0; i < babbling.size(); ++i)
+    {
+        string word = babbling[i];
+        string before;
+        int idx = 0;
+        bool check = true;
+        while (idx < word.length())
+        {
+            if (word.substr(idx, 3) == "aya" && before != "aya")
+            {
+                idx += 3;
+                before = "aya";
+            }
+            else if (word.substr(idx, 2) == "ye" && before != "ye")
+            {
+                idx += 2;
+                before = "ye";
+            }
+            else if (word.substr(idx, 3) == "woo" && before != "woo")
+            {
+                idx += 3;
+                before = "woo";
+            }
+            else if (word.substr(idx, 2) == "ma" && before != "ma")
+            {
+                idx += 2;
+                before = "ma";
+            }
+            else
+            {
+                check = false;
+                break;
+            }
+        }
+        if (check)
+            ++answer;
+    }
+    return answer;
+}
