@@ -1,0 +1,52 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/160586
+
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <iostream>
+
+using namespace std;
+
+vector<int> solution(vector<string> keymap, vector<string> targets)
+{
+    vector<int> answer;
+
+    unordered_map<char, int> um; // 알파벳 - 키
+
+    for (int i = 0; i < 26; ++i)
+    {
+        char c = 'A' + i;
+        um.insert({c, 9999});
+    }
+
+    for (int i = 0; i < keymap.size(); ++i)
+    {
+        for (int j = 0; j < keymap[i].length(); ++j)
+        {
+            char key = keymap[i][j];
+            int num = j + 1;
+
+            if (um[key] > num)
+                um[key] = num;
+        }
+    }
+
+    for (int i = 0; i < targets.size(); ++i)
+    {
+        int sum = 0;
+        for (int j = 0; j < targets[i].length(); ++j)
+        {
+            char key = targets[i][j];
+            if (um[key] == 9999)
+            {
+                sum = -1;
+                break;
+            }
+            else
+                sum += um[key];
+        }
+        answer.push_back(sum);
+    }
+
+    return answer;
+}
