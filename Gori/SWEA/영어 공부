@@ -1,0 +1,65 @@
+// 문제 : https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AXNQOb3avD0DFAXS
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int main(int argc, char **argv)
+{
+    int test_case;
+    int T;
+    cin >> T;
+
+    for (test_case = 1; test_case <= T; ++test_case)
+    {
+        int n, p;
+        cin >> n >> p;
+
+        vector<int> A(n);
+
+        for (int i = 0; i < n; ++i)
+            cin >> A[i];
+
+        int max_size = A.back() + p + 1;
+        vector<bool> day(max_size, false); // 공부한 날 체크
+
+        for (int i = 0; i < n; ++i)
+            day[A[i]] = true;
+
+        int start = A.front(), end = start; // A[0] 부터 탐색
+        
+        int answer = p, cnt = 0; // p일만큼 연속으로 해킹했을 경우
+
+        while (end < max_size)
+        {
+            if (day[end] == true) // 공부한 날
+            {
+                ++cnt;                     // 연속 공부 + 1
+                ++end;                     // 다음 day 탐색
+                answer = max(answer, cnt); // 최댓값 갱신
+            }
+            else // 공부 안한 날
+            {
+                if (p == 0) // 체크할 수 없음
+                {
+                    if (day[start] == false)
+                        ++p; // 공부 안해서 해킹으로 체크했을 때, 해킹 1회 반환
+                    ++start; // 출발점 이동
+                    --cnt;   //
+                }
+                else // 체크할 수 있음
+                {
+                    --p;                       // 해킹 1회 사용
+                    ++cnt;                     // 연속 공부 + 1
+                    ++end;                     // 다음 day 탐색
+                    answer = max(answer, cnt); // 최댓값 갱신
+                }
+            }
+            // cout << cnt << ' ' << p << endl;
+        }
+        cout << '#' << test_case << ' ' << answer << endl;
+    }
+    return 0;
+}
