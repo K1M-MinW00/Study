@@ -1,0 +1,63 @@
+// 문제 : https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AXTC4piqD_IDFASe
+
+#include <iostream>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+int main(int argc, char **argv)
+{
+    int test_case;
+    int T;
+
+    cin >> T;
+
+    for (test_case = 1; test_case <= T; ++test_case)
+    {
+
+        int N, K;
+        cin >> N;
+
+        vector<int> A(N);
+
+        for (int i = 0; i < N; ++i)
+            cin >> A[i];
+
+        cin >> K;
+
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> q; // 오름차순
+        // priority_queue<pair<int, pair<int,int>>> q; 내림차순
+        q.push({0, K}); // cnt , cur -> cnt 기준 오름차순
+
+        int answer = -1;
+
+        while (!q.empty())
+        {
+            int cnt = q.top().first;
+            int cur = q.top().second;
+
+            q.pop();
+
+            if (cur == 0)
+            {
+                answer = cnt;
+                break;
+            }
+
+            else if (cur > 0)
+            {
+                q.push({cnt + cur, 0}); // 최악의 경우 : cur 을 A[i] 로 나눌 수 없어 1을 계속 더하는 경우
+
+                for (int i = 0; i < N; ++i)
+                {
+                    q.push({cnt + cur % A[i], cur / A[i]}); // cur 을 A[i] 로 나눌 수 있는 경우
+                    // (기존의 cnt + A[i]로 나눈 나머지는 1로 더하는 경우, A[i]로 나눈 몫)
+                }
+            }
+        }
+
+        cout << '#' << test_case << ' ' << answer << endl;
+    }
+    return 0;
+}
