@@ -1,0 +1,75 @@
+// 문제 : https://swexpertacademy.com/main/code/codeBattle/problemDetail.do?contestProbId=AWkIfv7qBCYDFAXC&categoryId=AYzyEMha298DFASg&categoryType=BATTLE&battleMainPageIndex=2
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int base = 137;
+vector<int> p(4008004);
+vector<vector<int>> thash(2002, vector<int>(2002));
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    int T, test_case;
+    cin >> T;
+
+    p[0] = 1;
+
+    for (int i = 1; i < 4008004; ++i)
+        p[i] = p[i - 1] * base;
+
+    for (test_case = 1; test_case <= T; ++test_case)
+    {
+        int mr, mc, tr, tc;
+        int mh = 0; // my picture Hash
+        int ret = 0;
+
+        cin >> mr >> mc >> tr >> tc;
+
+        string line;
+
+        for (int i = 0; i < mr; ++i)
+        {
+            cin >> line;
+            for (int j = 0; j < mc; ++j)
+                mh = mh * base + line[j];
+        }
+
+        for (int i = 0; i < tr; ++i)
+        {
+            cin >> line;
+            thash[i][0] = 0;
+
+            for (int j = 0; j < tc; ++j)
+                thash[i][j + 1] = thash[i][j] * base + line[j];
+        }
+
+        for (int i = 0; i + mc - 1 < tc; ++i)
+        {
+            int temp = 0;
+            for (int j = 0; j < mr; ++j)
+                temp = temp * p[mc] + thash[j][i + mc] - thash[j][i] * p[mc];
+
+            if (mh == temp)
+                ret++;
+
+            for (int j = mr; j < tr; ++j)
+            {
+                temp -= p[mc * (mr - 1)] * (thash[j - mr][i + mc] - thash[j - mr][i] * p[mc]);
+
+                temp = temp * p[mc] + thash[j][i + mc] - thash[j][i] * p[mc];
+
+                if (mh == temp)
+                    ret++;
+            }
+        }
+
+        cout << "#" << test_case << ' ' << ret << endl;
+    }
+
+    return 0;
+}
