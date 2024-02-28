@@ -1,0 +1,90 @@
+// 문제 : https://swexpertacademy.com/main/code/codeBattle/problemDetail.do?contestProbId=AWId4Yn6hkwDFAVH&categoryId=AYzyEMha298DFASg&categoryType=BATTLE&battleMainPageIndex=2
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>
+
+using namespace std;
+
+int N, M;
+vector<pair<int, long long>> A[200001];
+vector<long long> D(200001);
+vector<long long> ans(200001);
+
+priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
+
+void dijkstra()
+{
+    D[1] = 0;
+
+    pq.push({0, 1});
+
+    while (!pq.empty())
+    {
+        long long dist = pq.top().first;
+        int cur = pq.top().second;
+
+        pq.pop();
+
+        if (dist > D[cur])
+            continue;
+
+        for (auto node : A[cur]) // A : node - weight
+        {
+            int next = node.first;
+            long long nextd = dist + node.second;
+
+            if (nextd == D[next])
+                ans[next] = min(ans[next], node.second);
+
+            else if (nextd < D[next])
+            {
+                D[next] = nextd;
+                ans[next] = node.second;
+                pq.push({nextd, next});
+            }
+        }
+    }
+}
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    int test_case, T;
+    cin >> T;
+
+    for (test_case = 1; test_case <= T; ++test_case)
+    {
+        cin >> N >> M;
+
+        for (int i = 0; i < 200001; ++i)
+            A[i].clear();
+
+        fill(D.begin(), D.end(), LLONG_MAX);
+        fill(ans.begin(), ans.end(), 0);
+
+        for (int i = 1; i <= M; ++i)
+        {
+            int u, v;
+            long long cost;
+            cin >> u >> v >> cost;
+            A[u].push_back({v, cost});
+            A[v].push_back({u, cost});
+        }
+
+        dijkstra();
+
+        long long answer = 0;
+
+        for (int i = 1; i <= N; ++i)
+            answer += ans[i];
+
+        cout << "#" << test_case << " " << answer << "\n";
+    }
+
+    return 0;
+}
