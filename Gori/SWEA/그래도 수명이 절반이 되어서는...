@@ -1,0 +1,90 @@
+// 문제 : https://swexpertacademy.com/main/code/codeBattle/problemDetail.do?contestProbId=AWH0J5T6BZwDFAVB&categoryId=AYzyEMha298DFASg&categoryType=BATTLE&battleMainPageIndex=2
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int n, k;
+vector<int> A(200001);
+vector<int> block(200001);
+
+bool check(int num)
+{
+    int b_idx = 0;
+
+    for (int i = 0; i < n; ++i)
+    {
+        if (A[i] > num)
+            continue;
+
+        int end_idx = i + block[b_idx];
+        for (int j = i; j < end_idx && j < n; ++j)
+        {
+            if (A[j] > num)
+            {
+                i = j; // A[j] 부터 다시 탐색
+                break;
+            }
+
+            if (j == end_idx - 1)
+            {
+                i = j;   // block[b_idx] 일 때 만족
+                ++b_idx; // 다음 block[b_idx] 일 때 확인
+            }
+        }
+
+        if (b_idx == k)
+            return true;
+    }
+
+    return false;
+}
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    int test_case;
+    int T;
+    cin >> T;
+
+    for (test_case = 1; test_case <= T; ++test_case)
+    {
+        fill(A.begin(), A.end(), 0);
+        fill(block.begin(), block.end(), 0);
+
+        cin >> n >> k;
+
+        int max_v = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            cin >> A[i];
+            if (max_v < A[i])
+                max_v = A[i];
+        }
+
+        for (int i = 0; i < k; ++i)
+            cin >> block[i];
+
+        int start = 1, end = max_v;
+
+        while (start < end)
+        {
+            int mid = start + (end - start) / 2;
+
+            if (check(mid))
+                end = mid;
+
+            else
+                start = mid + 1;
+        }
+
+        int answer = end; // 만족하는 Wear Level 중 가장 작은 최솟값
+        cout << '#' << test_case << ' ' << answer << endl;
+    }
+
+    return 0;
+}
