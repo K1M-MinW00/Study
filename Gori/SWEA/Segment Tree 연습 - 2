@@ -1,0 +1,198 @@
+// 문제 : https://swexpertacademy.com/main/code/codeBattle/problemDetail.do?contestProbId=AYJh9F4aXmEDFAVG&categoryId=AYzyEMha298DFASg&categoryType=BATTLE&battleMainPageIndex=2
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+long long init(vector<long long> &tree, int node, int s, int e, vector<long long> &arr)
+{
+    if (s == e)
+        return tree[node] = arr[s];
+
+    int m = (s + e) / 2;
+    long long a = init(tree, node * 2, s, m, arr);
+    long long b = init(tree, node * 2 + 1, m + 1, e, arr);
+
+    return tree[node] = a + b;
+}
+
+long long query(vector<long long> &tree, int node, int ts, int te, int qs, int qe)
+{
+    if (ts >= qs && qe >= te)
+        return tree[node];
+
+    if (te < qs || qe < ts)
+        return 0;
+
+    int m = (ts + te) / 2;
+    long long a = query(tree, node * 2, ts, m, qs, qe);
+    long long b = query(tree, node * 2 + 1, m + 1, te, qs, qe);
+
+    return a + b;
+}
+
+long long update(vector<long long> &tree, int node, int s, int e, int ii, long long value)
+{
+    if (s > ii || ii > e)
+        return tree[node];
+    if (s == e)
+        return tree[node] = value;
+
+    int m = (s + e) / 2;
+    long long a = update(tree, node * 2, s, m, ii, value);
+    long long b = update(tree, node * 2 + 1, m + 1, e, ii, value);
+
+    return tree[node] = a + b;
+}
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    int T;
+    cin >> T;
+
+    for (register int test_case = 1; test_case <= T; ++test_case)
+    {
+        int n, q;
+        cin >> n >> q;
+        vector<long long> o, e;
+
+        long long num;
+        for (int i = 0; i < n; ++i)
+        {
+            cin >> num;
+            if (i % 2 == 0)
+                e.push_back(num);
+            else
+                o.push_back(num);
+        }
+
+        cout << '#' << test_case;
+
+        vector<long long> oddTree(n * 2, 0);
+        vector<long long> evenTree(n * 2, 0);
+
+        long long lvalue, rvalue;
+
+        if (n % 2 == 0)
+        {
+            init(oddTree, 1, 0, n / 2 - 1, o);
+            init(evenTree, 1, 0, n / 2 - 1, e);
+
+            for (int k = 0; k < q; ++k)
+            {
+                int op;
+                cin >> op;
+                if (op == 0) // 값 변경
+                {
+                    int i;
+                    long long x;
+                    cin >> i >> x; // i/2 번째 인덱스를 x로
+                    if (i % 2 == 0)
+                        update(evenTree, 1, 1, n / 2, i / 2 + 1, x);
+                    else // i % 2 == 1
+                        update(oddTree, 1, 1, n / 2, i / 2 + 1, x);
+                }
+                else // 질문
+                {
+                    int l, r;
+                    cin >> l >> r; // a_l ~ a_(r - 1)
+
+                    // 범위를 만족하는 i의 개수가 짝수
+                    if (r % 2 == 0 && l % 2 == 0)
+                    {
+                        lvalue = query(evenTree, 1, 1, n / 2, l / 2 + 1, r / 2);
+                        rvalue = query(oddTree, 1, 1, n / 2, (l + 1) / 2 + 1, (r + 1) / 2);
+                    }
+                    else if (r % 2 == 1 && l % 2 == 1)
+                    {
+                        lvalue = query(oddTree, 1, 1, n / 2, l / 2 + 1, r / 2);
+                        rvalue = query(evenTree, 1, 1, n / 2, (l + 1) / 2 + 1, (r + 1) / 2);
+                    }
+
+                    // 범위를 만족하는 i의 개수가 홀수
+
+                    else if (l % 2 == 0 && r % 2 == 1)
+                    {
+                        lvalue = query(evenTree, 1, 1, n / 2, l / 2 + 1, (r + 1) / 2);
+                        rvalue = query(oddTree, 1, 1, n / 2, (l + 1) / 2 + 1, r / 2);
+                    }
+                    else if (r % 2 == 0 && l % 2 == 1)
+                    {
+                        lvalue = query(oddTree, 1, 1, n / 2, l / 2 + 1, (r + 1) / 2);
+                        rvalue = query(evenTree, 1, 1, n / 2, (l + 1) / 2 + 1, r / 2);
+                    }
+                    cout << ' ' << lvalue - rvalue;
+                }
+            }
+        }
+        else
+        {
+            init(oddTree, 1, 0, n / 2 - 1, o);
+            init(evenTree, 1, 0, n / 2, e);
+            for (int k = 0; k < q; ++k)
+            {
+                int op;
+                cin >> op;
+                if (op == 0) // 값 변경
+                {
+                    int i;
+                    long long x;
+                    cin >> i >> x; // i/2 번째 인덱스를 x로
+                    if (i % 2 == 0)
+                        update(evenTree, 1, 1, (n + 1) / 2, i / 2 + 1, x);
+                    else // i % 2 == 1
+                        update(oddTree, 1, 1, n / 2, i / 2 + 1, x);
+                }
+                else // 질문
+                {
+                    int l, r;
+                    cin >> l >> r; // a_l ~ a_(r - 1)
+                                   // 범위를 만족하는 i의 개수가 짝수
+                    if (r % 2 == 0 && l % 2 == 0)
+                    {
+                        lvalue = query(evenTree, 1, 1, (n + 1) / 2, l / 2 + 1, r / 2);
+                        rvalue = query(oddTree, 1, 1, n / 2, (l + 1) / 2 + 1, (r + 1) / 2);
+                    }
+                    else if (r % 2 == 1 && l % 2 == 1)
+                    {
+                        lvalue = query(oddTree, 1, 1, n / 2, l / 2 + 1, r / 2);
+                        rvalue = query(evenTree, 1, 1, (n + 1) / 2, (l + 1) / 2 + 1, (r + 1) / 2);
+                    }
+
+                    // 범위를 만족하는 i의 개수가 홀수
+
+                    else if (l % 2 == 0 && r % 2 == 1)
+                    {
+                        lvalue = query(evenTree, 1, 1, (n + 1) / 2, l / 2 + 1, (r + 1) / 2);
+                        rvalue = query(oddTree, 1, 1, n / 2, (l + 1) / 2 + 1, r / 2);
+                    }
+                    else if (r % 2 == 0 && l % 2 == 1)
+                    {
+                        lvalue = query(oddTree, 1, 1, n / 2, l / 2 + 1, (r + 1) / 2);
+                        rvalue = query(evenTree, 1, 1, (n + 1) / 2, (l + 1) / 2 + 1, r / 2);
+                    }
+                    cout << ' ' << lvalue - rvalue;
+                }
+            }
+        }
+        cout << '\n';
+        // cout << "lvalue = " << lvalue << ", rvalue = " << rvalue << " , result = " << lvalue - rvalue << endl;
+        // for (int i = 1; i < n * 2; ++i)
+        // {
+        //     cout << "even tree[" << i << "] = " << evenTree[i] << endl;
+        // }
+        // cout << endl;
+        // for (int i = 1; i < n * 2; ++i)
+        // {
+        //     cout << "odd tree[" << i << "] = " << oddTree[i] << endl;
+        // }
+        // cout << endl;
+    }
+
+    return 0;
+}
