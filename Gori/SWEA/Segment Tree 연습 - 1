@@ -1,0 +1,115 @@
+// 문제 : https://swexpertacademy.com/main/code/codeBattle/problemDetail.do?contestProbId=AYJh54EqXOYDFAVG&categoryId=AYzyEMha298DFASg&categoryType=BATTLE&battleMainPageIndex=2
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+vector<int> arr;
+
+int init(vector<int> &tree, int node, int s, int e, int op)
+{
+    if (s == e)
+        return tree[node] = arr[s];
+
+    int m = (s + e) / 2;
+    int a = init(tree, node * 2, s, m, op);
+    int b = init(tree, node * 2 + 1, m + 1, e, op);
+
+    if (op == 1)
+        return tree[node] = min(a, b);
+    else
+        return tree[node] = max(a, b);
+}
+
+int query(vector<int> &tree, int node, int ts, int te, int qs, int qe, int op)
+{
+    if (ts >= qs && qe >= te)
+        return tree[node];
+
+    if (te < qs || qe < ts)
+    {
+        if (op == 1)
+            return 2147483647;
+        else
+            return -1;
+    }
+
+    int m = (ts + te) / 2;
+    int a = query(tree, node * 2, ts, m, qs, qe, op);
+    int b = query(tree, node * 2 + 1, m + 1, te, qs, qe, op);
+
+    if (op == 1)
+        return min(a, b);
+    else
+        return max(a, b);
+}
+
+int update(vector<int> &tree, int node, int s, int e, int ii, int value, int op)
+{
+    if (s > ii || ii > e)
+        return tree[node];
+    if (s == e)
+        return tree[node] = value;
+
+    int m = (s + e) / 2;
+    int a = update(tree, node * 2, s, m, ii, value, op);
+    int b = update(tree, node * 2 + 1, m + 1, e, ii, value, op);
+
+    if (op == 1)
+        return tree[node] = min(a, b);
+    else
+        return tree[node] = max(a, b);
+}
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    int T;
+    cin >> T;
+
+    for (register int test_case = 1; test_case <= T; ++test_case)
+    {
+        int n, q;
+        cin >> n >> q;
+
+        arr.resize(n, 0);
+
+        for (register int i = 0; i < n; ++i)
+            cin >> arr[i];
+
+        vector<int> segTree1(n * 4, 0);
+        vector<int> segTree2(n * 4, 0);
+
+        init(segTree1, 1, 0, n - 1, 1);
+        init(segTree2, 1, 0, n - 1, 2);
+
+        cout << '#' << test_case;
+        for (int k = 0; k < q; ++k)
+        {
+            int op;
+            cin >> op;
+            if (op == 0)
+            {
+                int i, x;
+                cin >> i >> x;
+                update(segTree1, 1, 1, n, i + 1, x, 1); // i번째 인덱스를 x 로
+                update(segTree2, 1, 1, n, i + 1, x, 2);
+            }
+            else
+            {
+                int l, r;
+                cin >> l >> r;
+                int min_v = query(segTree1, 1, 1, n, l + 1, r, 1); // l 부터 r-1까지 
+                int max_v = query(segTree2, 1, 1, n, l + 1, r, 2);
+                cout << ' ' << max_v - min_v;
+            }
+        }
+        arr.clear();
+        cout << '\n';
+    }
+    return 0;
+}
