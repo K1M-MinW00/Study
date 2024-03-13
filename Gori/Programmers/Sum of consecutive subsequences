@@ -1,0 +1,45 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/178870
+
+#include <iostream>
+#include <vector>
+#include <climits>
+using namespace std;
+
+vector<int> solution(vector<int> sequence, int k)
+{
+    vector<int> answer;
+    answer = {0,0};
+   
+    int s = sequence.size()-1;
+    int e = s;
+    int sum = sequence[e];
+    
+    int length = INT_MAX;
+    
+    while(1)
+    {
+        if(s < 0)
+            break;
+
+        if(sum > k)
+            sum -= sequence[e--];
+        
+        else if (sum < k)
+            sum += sequence[--s];
+                
+        else // sum == k
+        {
+            if(e - s <= length) // 갱신되는 경우
+            {
+                length = e - s;
+                answer[0] = s;
+                answer[1] = e;
+            }
+            
+            sum -= sequence[e--];
+
+        }
+        
+    }
+    return answer;
+}
