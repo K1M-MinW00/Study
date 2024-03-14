@@ -27,7 +27,7 @@ int solution(vector<int> arrayA, vector<int> arrayB)
     for (int i = 1; i < arrayB.size(); ++i)
         gcd_B = gcd(gcd_B, arrayB[i]);
 
-    for (int i = 1; i < arrayB.size(); ++i) // 조건 1 확인
+    for (int i = 0; i < arrayB.size(); ++i) // 조건 1 확인
     {
         if (arrayB[i] % gcd_A == 0)
         {
@@ -44,10 +44,6 @@ int solution(vector<int> arrayA, vector<int> arrayB)
             break;
         }
     }
-
-
-    if (gcd_B == 1)
-        condition2 = true;
 
     if (condition1 && condition2)
         return 0;
