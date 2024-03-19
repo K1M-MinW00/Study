@@ -1,0 +1,36 @@
+// 문제 : https://school.programmers.co.kr/learn/courses/30/lessons/131704
+
+#include <vector>
+#include <stack>
+
+using namespace std;
+
+int solution(vector<int> order) {
+    int answer = 0;
+    
+    int n = order.size();
+    stack<int> belt;
+    
+    int idx = 0;
+    
+    for(int i=1;i<=n;++i) // 1번 상자부터 n번 상자까지
+    {
+        if(i != order[idx]) // 맨 앞에 놓인 상자가 순서와 맞지 않으면
+            belt.push(i); // 컨테이너 벨트에 보관
+        
+        else // 순서와 맞는 경우, 벨트 안의 상자와 다음 인덱스 비교
+        {
+            ++idx;
+            ++answer;
+            
+            while(!belt.empty() && order[idx] == belt.top())
+            {
+                belt.pop();
+                ++idx;
+                ++answer;
+            }
+        }
+    }
+    
+    return answer;
+}
